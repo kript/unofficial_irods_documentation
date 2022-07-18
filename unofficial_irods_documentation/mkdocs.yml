@@ -1,2 +1,15 @@
 site_name: Unofficial iRODS Documentation
 theme: readthedocs
+nav:
+    - Home: index.md
+    - About: About.md
+    - Developer:
+      - "Brief overview": Developer.md
+    # - "Initial deployment"
+    # - "Metrics and monitoring"
+    # - "Zone Management"
+    # - "Misc best practices"
+    # - Resources
+    #   - "Compound Trees"
+    #   - "File system resources"
+    #   - "S3 resources"
