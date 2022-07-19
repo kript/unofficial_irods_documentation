@@ -1,6 +1,6 @@
 # Making changes to the core project
 
-(Coped from [6471](https://github.com/irods/irods/issues/6471) )
+(Copied from [6471](https://github.com/irods/irods/issues/6471) )
 
 If you're trying to make changes to the server, it is going to require additional steps.
 

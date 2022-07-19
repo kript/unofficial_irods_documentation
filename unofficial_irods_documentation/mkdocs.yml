@@ -1,5 +1,7 @@
 site_name: Unofficial iRODS Documentation
-theme: readthedocs
+theme:
+  name: readthedocs
+  favicon: docs/img/favicon.ico
 nav:
     - Home: index.md
     - About: About.md
