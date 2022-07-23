@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Usefull Queries - Unofficial iRODS Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Usefull Queries";
+        var mkdocs_page_input_path = "Queries.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Unofficial iRODS Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../About/">About</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Developer</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Developer/">Brief overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../PythonAPI/">Python API</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Database</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Database_tuning/">Tuning</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">System Administration</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Usefull Queries</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#adding-specific-queries-from-the-command-line">Adding specific queries from the command line</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sending-query-output-by-email">Sending query output by email</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#specific-queries-to-monitor-catalog-state">Specific queries to monitor catalog state</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#count-of-zero-length-files-where-the-checksum-is-not-that-of-an-empty-file">Count of zero Length files where the checksum is not that of an empty file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#count-of-zero-length-files-created-in-the-last-week-where-the-checksum-is-not-that-of-an-empty-file">Count of zero Length files created in the last week where the checksum is not that of an empty file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#list-objects-with-a-single-replica-where-they-are-not-in-a-tree-that-only-has-single-replicas">List objects with a single replica where they are not in a tree that only has single replicas</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#as-above-but-with-no-time-limit">As above but with no time limit</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#as-above-but-no-time-limit-and-just-return-a-count-for-monitoring">As above but no time limit and just return a count (for monitoring)</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../Server_setup/">Setup</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Unofficial iRODS Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>System Administration &raquo;</li><li>Usefull Queries</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="querying-irods">Querying iRODS</h1>
+<h2 id="adding-specific-queries-from-the-command-line">Adding specific queries from the command line</h2>
+<p>bash escaping can cause havok when loading in a SQl query, so use this approach to work around that.</p>
+<pre><code># create file e.g.
+# vim lastWeekZeroLengthUnintentional.sql
+# put that into an environment variable
+QUERY=$(cat lastWeekZeroLengthUnintentional.sql )
+# use the env varaible as a source for the query
+iadmin asq &quot;${QUERY}&quot; lastWeekZeroLengthUnintentional
+# run the query
+iquest --no-page --sql lastWeekZeroLengthUnintentional
+</code></pre>
+<h2 id="sending-query-output-by-email">Sending query output by email</h2>
+<pre><code>iquest --no-page --sql lastWeekFilesSingleReplicaNotnoReplRoot | mail -s &quot;Single Replica Files Created over the last week&quot; -r &quot;iRODS Bot irods@domain&gt;&quot; recipient@domain
+</code></pre>
+<h2 id="specific-queries-to-monitor-catalog-state">Specific queries to monitor catalog state</h2>
+<h3 id="count-of-zero-length-files-where-the-checksum-is-not-that-of-an-empty-file">Count of zero Length files where the checksum is <em>not</em> that of an empty file</h3>
+<pre><code class="language-sql">select count(*) from r_data_main d where d.data_size = '0'
+and to_timestamp(cast(d.create_ts as bigint)) &gt; (NOW() - INTERVAL '7 DAY')
+and d.data_id not in (select object_id from r_objt_metamap a, r_meta_main b
+                        where a.meta_id = b.meta_id
+                        and b.meta_attr_name = 'md5'
+                        and b.meta_attr_value = 'd41d8cd98f00b204e9800998ecf8427e')
+and d.resc_id not in (with recursive cte as (
+                                                select r.resc_id, cast(r.resc_name as text) as resc_name, cast((case when r.resc_parent = '' then null else r.resc_parent end) as integer), 1 as level
+                                                 from r_resc_main r
+                                                union all
+                                                select e.resc_id, c.resc_name || ';' || cast(e.resc_name as text) as resc_name,  cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer), c.level + 1
+                                                from cte c
+                                                join r_resc_main e on cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer) = c.resc_id
+                                             )
+                        select resc_id from cte z
+                        where resc_name like 'noReplRoot%')
+</code></pre>
+<h3 id="count-of-zero-length-files-created-in-the-last-week-where-the-checksum-is-not-that-of-an-empty-file">Count of zero Length files created in the last week where the checksum is <em>not</em> that of an empty file</h3>
+<pre><code class="language-sql">select count(*) from r_data_main d where data_size = '0'
+and d.data_id not in (select object_id from r_objt_metamap a, r_meta_main b 
+                        where a.meta_id = b.meta_id
+                        and b.meta_attr_name = 'md5'  
+                        and b.meta_attr_value = 'd41d8cd98f00b204e9800998ecf8427e')
+and d.resc_id not in (with recursive cte as (
+                                                select r.resc_id, cast(r.resc_name as text) as resc_name, cast((case when r.resc_parent = '' then null else r.resc_parent end) as integer), 1 as level
+                                                 from r_resc_main r 
+                                                union all
+                                                select e.resc_id, c.resc_name || ';' || cast(e.resc_name as text) as resc_name,  cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer), c.level + 1
+                                                from cte c
+                                                join r_resc_main e on cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer) = c.resc_id
+                                             )
+                        select resc_id from cte z
+                        where resc_name like 'noReplRoot%')
+</code></pre>
+<h3 id="list-objects-with-a-single-replica-where-they-are-not-in-a-tree-that-only-has-single-replicas">List objects with a single replica where they are <em>not</em> in a tree that only has single replicas</h3>
+<p>A bit confusing this one, but impossible to do with GenQuery. The idea behind this query is that there are two trees in a Zone, one called 'root' and one called 'noReplRoot'.
+As you might surmise, the 'root' tree contains a 'replicate' composite tree hierachy, so there should not be any files with a single replica unless they are in the noReplResc tree. 
+This query lists objects violating those conditions created in the past week;</p>
+<pre><code class="language-sql">select a.data_id, b.coll_name, a.data_name, to_timestamp(cast(a.create_ts as bigint)) as create_date  from r_data_main a, r_coll_main b
+where a.coll_id = b.coll_id
+and to_timestamp(cast(a.create_ts as bigint)) &gt; (NOW() - INTERVAL '7 DAY')
+and a.data_id in 
+(select d.data_id from r_data_main d where resc_id not in (
+        with recursive cte as (
+                select r.resc_id, cast(r.resc_name as text) as resc_name, cast((case when r.resc_parent = '' then null else r.resc_parent end) as integer), 1 as level
+                from r_resc_main r 
+                union all
+                select e.resc_id, c.resc_name || ';' || cast(e.resc_name as text) as resc_name,  cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer), c.level + 1
+                from cte c
+                join r_resc_main e on cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer) = c.resc_id)
+        select resc_id from cte z
+        where resc_name like 'noReplRoot%')
+group by d.data_id having count(*) = 1)
+</code></pre>
+<h4 id="as-above-but-with-no-time-limit">As above but with no time limit</h4>
+<pre><code class="language-sql">select a.data_id, b.coll_name, a.data_name, to_timestamp(cast(a.create_ts as bigint)) as create_date  from r_data_main a, r_coll_main b
+where a.coll_id = b.coll_id
+and a.data_id in 
+(select d.data_id from r_data_main d where resc_id not in (
+        with recursive cte as (
+                select r.resc_id, cast(r.resc_name as text) as resc_name, cast((case when r.resc_parent = '' then null else r.resc_parent end) as integer), 1 as level
+                from r_resc_main r 
+                union all
+                select e.resc_id, c.resc_name || ';' || cast(e.resc_name as text) as resc_name,  cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer), c.level + 1
+                from cte c
+                join r_resc_main e on cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer) = c.resc_id)
+        select resc_id from cte z
+        where resc_name like 'noReplRoot%')
+group by d.data_id having count(*) = 1)
+order by a.create_ts desc
+</code></pre>
+<h4 id="as-above-but-no-time-limit-and-just-return-a-count-for-monitoring">As above but no time limit and just return a count (for monitoring)</h4>
+<pre><code class="language-sql">select count(*) from  (
+        select d.data_id from r_data_main d where resc_id not in (
+                with recursive cte as (
+                select r.resc_id, cast(r.resc_name as text) as resc_name, cast((case when r.resc_parent = '' then null else r.resc_parent end) as integer), 1 as level
+                 from r_resc_main r 
+                union all
+                select e.resc_id, c.resc_name || ';' || cast(e.resc_name as text) as resc_name,  cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer), c.level + 1
+                from cte c
+                join r_resc_main e on cast((case when e.resc_parent = '' then null else e.resc_parent end) as integer) = c.resc_id
+                )
+                select resc_id from cte z
+                where resc_name like 'noReplRoot%')
+group by d.data_id having count(*) = 1) t
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Database_tuning/" class="btn btn-neutral float-left" title="Tuning"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Server_setup/" class="btn btn-neutral float-right" title="Setup">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../Database_tuning/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Server_setup/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

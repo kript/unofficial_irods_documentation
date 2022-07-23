@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Brief overview - Unofficial iRODS Documentation</title>
+    <title>Tuning - Unofficial iRODS Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Brief overview";
-        var mkdocs_page_input_path = "Developer.md";
+        var mkdocs_page_name = "Tuning";
+        var mkdocs_page_input_path = "Database_tuning.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -49,21 +49,21 @@
                 </li>
               </ul>
               <p class="caption"><span class="caption-text">Developer</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Brief overview</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#general-tips">General Tips:</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#custom-plugins">Custom plugins</a>
-    </li>
-    </ul>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Developer/">Brief overview</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../PythonAPI/">Python API</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Database</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../Database_tuning/">Tuning</a>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Tuning</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#indexes">Indexes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#no-of-connections">No of Connections</a>
+    </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">System Administration</span></p>
@@ -87,7 +87,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Developer &raquo;</li><li>Brief overview</li>
+          <li>Database &raquo;</li><li>Tuning</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -97,45 +97,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="making-changes-to-the-core-project">Making changes to the core project</h1>
-<p>(Copied from <a href="https://github.com/irods/irods/issues/6471">6471</a> )</p>
-<p>If you're trying to make changes to the server, it is going to require additional steps.</p>
-<p>Here is a quick breakdown of some of the most important directories:</p>
-<pre><code>lib/api/src: Client-side API functions (basically wrappers around procApiRequest)
-lib/core/src: Code that is used on the client-side and server-side
-server/api/src: Server-side API endpoint implementations
-server/core/src: Server-side utilities, main server startup logic, etc.
-plugins/database/src: Database specific logic (db_plugin.cpp)
-</code></pre>
-<h2 id="general-tips">General Tips:</h2>
-<pre><code>Functions with an rc prefix represent client-side APIs
-    These calls invoke policy
-Functions with an rs prefix represent server-side APIs
-    These calls do not invoke policy
-    Functions with a leading underscore are meant for server-side use only
-The entry point for the server (startup, delay server forking, etc) can be found in rodsServer.cpp
-The agent factory logic can be found in rodsAgent.cpp
-When adding a new file to the server, it will require updating one or more CMakeLists.txt files
-    Start with the CMakeLists.txt file located at the root of the repo. That file will help in understanding the structure of the project
-An easy way to see if your change is being compiled into the server is by adding a log message to rsDataObjPut() and then invoking iput. If everything compiles, then you should see your log message in the log file
-Last but not least, we highly recommend compiling and installing all of the packages produced by the https://github.com/irods/irods_development_environment. Doing so avoids weird situations around ABI, etc.
-</code></pre>
-<h2 id="custom-plugins">Custom plugins</h2>
-<p>(Taken from <a href="https://github.com/irods/irods/issues/6458">#6458</a>)</p>
-<p>Calling a rule defined in a custom plugin (a .so file) which is defined in the server conf with a particular <code>instance_name</code>.</p>
-<p>To make this work, your plugin must implement exec_rule_text(). You can use the Logical Quotas REP as a reference for achieving this. See the following:</p>
-<pre><code>https://github.com/irods/irods_rule_engine_plugin_logical_quotas/blob/df75c52f6d8aa89a2b452aeb56626c2f944b5986/src/main.cpp#L360
-https://github.com/irods/irods_rule_engine_plugin_logical_quotas/blob/df75c52f6d8aa89a2b452aeb56626c2f944b5986/src/main.cpp#L331
-https://github.com/irods/irods_rule_engine_plugin_logical_quotas/blob/df75c52f6d8aa89a2b452aeb56626c2f944b5986/src/main.cpp#L220
-</code></pre>
-<p>If you want to invoke rules within your plugin from a delay rule, you'll also need to implement exec_rule_expression(). The Logical Quotas REP supports both of these functions and demonstrates how someone can support these through a single function.</p>
-<p>Keep in mind that the implementation for your plugin could be very different from the Logical Quotas implementation depending on how your plugin accepts input. Logical Quotas accepts JSON as input. If your plugin also accepts JSON, you should be able to use the same pattern as the Logical Quotas REP.</p>
+                <h1 id="database-tuning">Database tuning</h1>
+<h2 id="indexes">Indexes</h2>
+<p>It can be tempting to add indexes for lots of the tables, but beware, there is database overhead to maintain an index.</p>
+<p>e.g., run as PostgreSQL user with write access to the database; <code>create index idx_data_main9 on R_DATA_MAIN (data_checksum);</code></p>
+<p>For example, if you are writing lots of checksums (eg you have msiDataObjChksum in an upload rule), you might <em>not</em> want to add an index as the default and it can be added later by a DBA et al.</p>
+<h2 id="no-of-connections">No of Connections</h2>
+<p>As iRODS does not do connection pooling, every connection to iRODS (including admin tasks) creates a new conection to the database, so you need to be sure that your database is configured for a number of connections relative to the amount of traffic you are expecting (and possibly a healthy overhead to be sure).</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../About/" class="btn btn-neutral float-left" title="About"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../PythonAPI/" class="btn btn-neutral float-right" title="Python API">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../PythonAPI/" class="btn btn-neutral float-left" title="Python API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Queries/" class="btn btn-neutral float-right" title="Usefull Queries">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -158,10 +132,10 @@ https://github.com/irods/irods_rule_engine_plugin_logical_quotas/blob/df75c52f6d
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../About/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../PythonAPI/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../PythonAPI/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../Queries/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
