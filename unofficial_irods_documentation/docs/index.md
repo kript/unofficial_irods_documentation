@@ -1,17 +1,11 @@
-# Welcome to MkDocs
+# unofficial_irods_documentation
+Best Practices and System Administrator documentation for iRODS systems by the community. NOT affiliated with RENCI or the iRODS project.
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+Currently deployed using GitHub Pages - [https://kript.github.io/unofficial_irods_documentation/](https://kript.github.io/unofficial_irods_documentation/)
 
-## Commands
+## Contributors
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+This site would not be possible without the following contributors - thank you!
 
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+* [Clemens Messerschmidt](https://github.com/messersc)
+* [John Constable (ahem)](https://github.com/kript)
