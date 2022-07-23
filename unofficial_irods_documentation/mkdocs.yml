@@ -13,6 +13,7 @@ nav:
     - System Administration:
       - "Usefull Queries": Queries.md
       - "Setup": Server_setup.md
+      - "General Notes": Sysadmin.md
 
     # - "Initial deployment"
     # - "Metrics and monitoring"
