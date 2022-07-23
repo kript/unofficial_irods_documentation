@@ -7,6 +7,13 @@ nav:
     - About: About.md
     - Developer:
       - "Brief overview": Developer.md
+      - "Python API": PythonAPI.md
+    - Database:
+      - "Tuning": Database_tuning.md
+    - System Administration:
+      - "Usefull Queries": Queries.md
+      - "Setup": Server_setup.md
+
     # - "Initial deployment"
     # - "Metrics and monitoring"
     # - "Zone Management"
