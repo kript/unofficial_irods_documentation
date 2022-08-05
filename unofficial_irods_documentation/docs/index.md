@@ -22,3 +22,4 @@ This site would not be possible without the following contributors - thank you!
 
 * [Clemens Messerschmidt](https://github.com/messersc)
 * [John Constable (ahem)](https://github.com/kript)
+* [Sietse Snel](https://github.com/stsnel)
