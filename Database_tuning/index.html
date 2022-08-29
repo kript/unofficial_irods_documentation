@@ -59,9 +59,13 @@
               <ul class="current">
                   <li class="toctree-l1 current"><a class="reference internal current" href="./">Tuning</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#finding-slow-queries">Finding slow queries</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#finding-the-cause-of-slow-queries">Finding the cause of slow queries</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#indexes">Indexes</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#no-of-connections">No of Connections</a>
+    <li class="toctree-l2"><a class="reference internal" href="#number-of-connections">Number of Connections</a>
     </li>
     </ul>
                   </li>
@@ -100,12 +104,143 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="database-tuning">Database tuning</h1>
+<p>The iCAT database is a key part of iRODS. In order to get iRODS to perform well, it is important to
+ensure that you don't have any bottlenecks in your database configuration.</p>
+<p>You can find generic advice about database tuning in <a href="https://use-the-index-luke.com">Use the Index, Luke</a>.</p>
+<p>Some generic high-level advice:
+* Newer database versions generally have performance improvements. If you have
+  a very old database version, consider upgrading.
+* If only some queries are very slow, verify that your iCAT database has
+  indexes that the database can use to efficiently handle these queries. Indexes
+  can potentially increase performance of particular queries a lot, although
+  that can be at the expense of disk space and speed of adding new data.
+* Ensure that your database has adequate resources, such as memory, and check
+  that your database is configured to use these resources. Consider running
+  your iCAT database on a separate server, so that it doesn't have to compete
+  with other services for resources.</p>
+<h2 id="finding-slow-queries">Finding slow queries</h2>
+<p>One way to improve database performance is to first determine what queries
+are taking a lot of time, and improve their performance (if they are used
+frequently or getting them to run fast is important for other reasons).
+PostgreSQL can be configured to log any slow queries using the
+<code>log_min_duration_statement</code> setting. For example, in order to log any
+queries that take more than one second (1000 ms), put the following in your
+<code>postgresql.conf</code> and reload the configuration (<code>pg_ctl reload</code>):</p>
+<pre><code>log_min_duration_statement = 1000
+</code></pre>
+<p>An example of a logged statement could be:</p>
+<pre><code>LOG:  duration: 119619.149 ms  execute &lt;unnamed&gt;:
+ select distinct R_DATA_MAIN.data_name ,R_COLL_MAIN.coll_name ,min(R_DATA_MAIN.create_ts ) ,max(R_DATA_MAIN.modify_ts ) ,R_DATA_MAIN.data_size from
+ R_DATA_MAIN , R_COLL_MAIN  where upper (R_COLL_MAIN.coll_name ) LIKE $1  AND upper (R_DATA_MAIN.data_name ) LIKE $2  AND R_COLL_MAIN.coll_id =
+ R_DATA_MAIN.coll_id  group by R_DATA_MAIN.data_name ,R_COLL_MAIN.coll_name ,R_DATA_MAIN.data_size  order by R_DATA_MAIN.data_name,
+ R_COLL_MAIN.coll_name, R_DATA_MAIN.data_name
+DETAIL:  parameters: $1 = '%COLL%', $2 = '%MYDATAOBJECT%'
+</code></pre>
+<p>This is a SELECT query that performs a case-insensitive wildcard search for data
+objects with a particular collection and data object name.</p>
+<h2 id="finding-the-cause-of-slow-queries">Finding the cause of slow queries</h2>
+<p>Generally speaking, it's advisable to test any queries and potential improvements
+to make them run faster on a test server. When measuring query time, running
+on a test server reduces the risk that query time is affected by other operations.
+You can also test UPDATE, INSERT and DELETE queries without having to worry
+about tests affecting your production database.</p>
+<p>If you use PostgreSQL, you can use the <a href="https://github.com/UtrechtUniversity/icat-data-generator">iCAT data generator</a>
+to produce a database with synthetic data for performance testing.</p>
+<p>If you find a query that takes a lot of time, you can retrieve the
+query plan and statistics using the <code>EXPLAIN ANALYZE</code> command.</p>
+<p>Example output on a test server with a smaller database:</p>
+<pre><code>icat_medium=# explain analyze select distinct R_DATA_MAIN.data_name ,R_COLL_MAIN.coll_name ,min(R_DATA_MAIN.create_ts ) ,max(R_DATA_MAIN.modify_ts ) ,R_DATA_MAIN.data_size from
+ R_DATA_MAIN , R_COLL_MAIN  where upper (R_COLL_MAIN.coll_name ) LIKE '%BAR%'  AND upper (R_DATA_MAIN.data_name ) LIKE '%FOO%'  AND R_COLL_MAIN.coll_id =
+ R_DATA_MAIN.coll_id  group by R_DATA_MAIN.data_name ,R_COLL_MAIN.coll_name ,R_DATA_MAIN.data_size  order by R_DATA_MAIN.data_name,
+ R_COLL_MAIN.coll_name, R_DATA_MAIN.data_name;
+                                                                               QUERY PLAN
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Unique  (cost=122590.55..122710.55 rows=8000 width=190) (actual time=1220.557..1236.456 rows=0 loops=1)
+   -&gt;  Sort  (cost=122590.55..122610.55 rows=8000 width=190) (actual time=1220.556..1236.455 rows=0 loops=1)
+         Sort Key: r_data_main.data_name, r_coll_main.coll_name, (min((r_data_main.create_ts)::text)), (max((r_data_main.modify_ts)::text)), r_data_main.data_size
+         Sort Method: quicksort  Memory: 25kB
+         -&gt;  Finalize GroupAggregate  (cost=121055.85..122071.92 rows=8000 width=190) (actual time=1220.541..1236.440 rows=0 loops=1)
+               Group Key: r_data_main.data_name, r_coll_main.coll_name, r_data_main.data_size
+               -&gt;  Gather Merge  (cost=121055.85..121908.59 rows=6666 width=190) (actual time=1220.539..1236.437 rows=0 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     -&gt;  Partial GroupAggregate  (cost=120055.82..120139.15 rows=3333 width=190) (actual time=1202.909..1202.912 rows=0 loops=3)
+                           Group Key: r_data_main.data_name, r_coll_main.coll_name, r_data_main.data_size
+                           -&gt;  Sort  (cost=120055.82..120064.16 rows=3333 width=148) (actual time=1202.908..1202.910 rows=0 loops=3)
+                                 Sort Key: r_data_main.data_name, r_coll_main.coll_name, r_data_main.data_size
+                                 Sort Method: quicksort  Memory: 25kB
+                                 Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                 Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                 -&gt;  Nested Loop  (cost=0.43..119860.80 rows=3333 width=148) (actual time=1202.869..1202.871 rows=0 loops=3)
+                                       -&gt;  Parallel Seq Scan on r_coll_main  (cost=0.00..42088.00 rows=16667 width=105) (actual time=1202.868..1202.868 rows=0 loops=3)
+                                             Filter: (upper((coll_name)::text) ~~ '%BAR%'::text)
+                                             Rows Removed by Filter: 333333
+                                       -&gt;  Index Scan using idx_data_main3 on r_data_main  (cost=0.43..4.66 rows=1 width=59) (never executed)
+                                             Index Cond: (coll_id = r_coll_main.coll_id)
+                                             Filter: (upper((data_name)::text) ~~ '%FOO%'::text)
+ Planning Time: 4.643 ms
+ Execution Time: 1236.571 ms
+(25 rows)
+</code></pre>
+<p>In this example, PostgreSQL has to scan all rows in the collection table (<code>r_coll_main</code>),
+since it doesn't have a suitable index.</p>
 <h2 id="indexes">Indexes</h2>
-<p>It can be tempting to add indexes for lots of the tables, but beware, there is database overhead to maintain an index.</p>
-<p>e.g., run as PostgreSQL user with write access to the database; <code>create index idx_data_main9 on R_DATA_MAIN (data_checksum);</code></p>
-<p>For example, if you are writing lots of checksums (eg you have msiDataObjChksum in an upload rule), you might <em>not</em> want to add an index as the default and it can be added later by a DBA et al.</p>
-<h2 id="no-of-connections">No of Connections</h2>
-<p>As iRODS does not do connection pooling, every connection to iRODS (including admin tasks) creates a new conection to the database, so you need to be sure that your database is configured for a number of connections relative to the amount of traffic you are expecting (and possibly a healthy overhead to be sure).</p>
+<p>Since the query uses a wildcard search, we would need to add an index that supports
+wildcard searches, like a <a href="https://www.postgresql.org/docs/11/gin.html">GIN index</a>.
+If you don't have the <code>pg_trgm</code> extension installed yet, install it first:</p>
+<pre><code>icat_medium=# CREATE EXTENSION pg_trgm;
+CREATE EXTENSION
+</code></pre>
+<p>Now add a matching index:</p>
+<pre><code>icat_medium=# CREATE INDEX idx_coll_gin1 ON r_coll_main USING gin (upper((coll_name)) gin_trgm_ops);
+CREATE INDEX
+</code></pre>
+<p>This speeds up the query by a factor of roughly 100:</p>
+<pre><code>icat_medium=# explain analyze select distinct R_DATA_MAIN.data_name ,R_COLL_MAIN.coll_name ,min(R_DATA_MAIN.create_ts ) ,max(R_DATA_MAIN.modify_ts ) ,R_DATA_MAIN.data_size from
+ R_DATA_MAIN , R_COLL_MAIN  where upper (R_COLL_MAIN.coll_name ) LIKE '%BAR%'  AND upper (R_DATA_MAIN.data_name ) LIKE '%FOO%'  AND R_COLL_MAIN.coll_id =
+ R_DATA_MAIN.coll_id  group by R_DATA_MAIN.data_name ,R_COLL_MAIN.coll_name ,R_DATA_MAIN.data_size  order by R_DATA_MAIN.data_name,
+ R_COLL_MAIN.coll_name, R_DATA_MAIN.data_name;
+                                                                                 QUERY PLAN
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Unique  (cost=106751.55..106871.55 rows=8000 width=190) (actual time=7.627..10.721 rows=0 loops=1)
+   -&gt;  Sort  (cost=106751.55..106771.55 rows=8000 width=190) (actual time=7.626..10.720 rows=0 loops=1)
+         Sort Key: r_data_main.data_name, r_coll_main.coll_name, (min((r_data_main.create_ts)::text)), (max((r_data_main.modify_ts)::text)), r_data_main.data_size
+         Sort Method: quicksort  Memory: 25kB
+         -&gt;  Finalize GroupAggregate  (cost=105216.85..106232.92 rows=8000 width=190) (actual time=7.621..10.714 rows=0 loops=1)
+               Group Key: r_data_main.data_name, r_coll_main.coll_name, r_data_main.data_size
+               -&gt;  Gather Merge  (cost=105216.85..106069.59 rows=6666 width=190) (actual time=7.620..10.712 rows=0 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     -&gt;  Partial GroupAggregate  (cost=104216.82..104300.15 rows=3333 width=190) (actual time=0.247..0.249 rows=0 loops=3)
+                           Group Key: r_data_main.data_name, r_coll_main.coll_name, r_data_main.data_size
+                           -&gt;  Sort  (cost=104216.82..104225.16 rows=3333 width=148) (actual time=0.246..0.247 rows=0 loops=3)
+                                 Sort Key: r_data_main.data_name, r_coll_main.coll_name, r_data_main.data_size
+                                 Sort Method: quicksort  Memory: 25kB
+                                 Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                 Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                 -&gt;  Nested Loop  (cost=326.43..104021.80 rows=3333 width=148) (actual time=0.208..0.209 rows=0 loops=3)
+                                       -&gt;  Parallel Bitmap Heap Scan on r_coll_main  (cost=326.00..26249.00 rows=16667 width=105) (actual time=0.207..0.207 rows=0 loops=3)
+                                             Recheck Cond: (upper((coll_name)::text) ~~ '%BAR%'::text)
+                                             -&gt;  Bitmap Index Scan on idx_coll_gin1  (cost=0.00..316.00 rows=40000 width=0) (actual time=0.019..0.020 rows=0 loops=1)
+                                                   Index Cond: (upper((coll_name)::text) ~~ '%BAR%'::text)
+                                       -&gt;  Index Scan using idx_data_main3 on r_data_main  (cost=0.43..4.66 rows=1 width=59) (never executed)
+                                             Index Cond: (coll_id = r_coll_main.coll_id)
+                                             Filter: (upper((data_name)::text) ~~ '%FOO%'::text)
+ Planning Time: 0.458 ms
+ Execution Time: 10.800 ms
+
+</code></pre>
+<p>Beware that there is database overhead to maintain an index. For example, indexes take up disk space. So it's good
+to check how much disk space is needed on a test server and consider this before adding indexes on production systems.</p>
+<p>Finally, indexes can increase the time needed for inserting large amounts of data into the database. So if you want
+to register a large amount of data in the database and be able to search it quickly afterwards, it can make sense
+to insert the data first and add the indexes later. For example, if you are writing lots of checksums (e.g.
+you have <code>msiDataObjChksum</code> in an upload rule), you might want to delay adding an index on the checksum
+values until it actually becomes necessary to get adequate performance for checksum queries.</p>
+<h2 id="number-of-connections">Number of Connections</h2>
+<p>As iRODS does not do connection pooling, every connection to iRODS (including admin tasks) creates a new connection
+to the database, so you need to be sure that your database is configured for a number of connections relative to
+the amount of traffic you are expecting (and possibly a healthy overhead to be sure).</p>
               
             </div>
           </div><footer>
