@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Setup - Unofficial iRODS Documentation</title>
+    <title>Containerisation - Unofficial iRODS Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Setup";
-        var mkdocs_page_input_path = "Server_setup.md";
+        var mkdocs_page_name = "Containerisation";
+        var mkdocs_page_input_path = "Containerisation.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -62,13 +62,13 @@
               </ul>
               <p class="caption"><span class="caption-text">System Administration</span></p>
               <ul class="current">
-                  <li class="toctree-l1"><a class="reference internal" href="../Containerisation/">Containerisation</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Containerisation</a>
+    <ul class="current">
+    </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Sysadmin/">General Notes</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Setup</a>
-    <ul class="current">
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../Server_setup/">Setup</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Queries/">Usefull Queries</a>
                   </li>
@@ -87,7 +87,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>System Administration &raquo;</li><li>Setup</li>
+          <li>System Administration &raquo;</li><li>Containerisation</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -97,15 +97,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="server-setup">Server Setup</h1>
-<p>iRODS is very sesntitive to hostmaes, so you must ensure that each server can resolve the names of other servers )<em>as they believe themselves to be called</em>.</p>
-<p>This is particularly important when it comes to FQDN's etc, and if dealing with Spilt DNS and similar architectures where servers may resolve differently depending on the client/interface used for the resolution.</p>
+                <h1 id="container-options">Container Options</h1>
+<h1 id="singularity">Singularity</h1>
+<h2 id="icommands">icommands</h2>
+<p>Contributed by <a href="https://github.com/ll4strw">leonardo</a>;</p>
+<pre><code># The simplest singularity def file to get you started. Customise appropriately
+# cat icommands.def
+Bootstrap: docker
+From: centos:centos7
+
+
+%post
+    yum upgrade -y
+    yum install -y wget epel-release
+    yum install -y python36-jsonschema python36-psutil
+    rpm --import https://packages.irods.org/irods-signing-key.asc
+    wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo
+    yum install -y irods-icommands.x86_64
+
+%environment
+    export LC_ALL=C
+
+
+%runscript
+    exec &quot;$@&quot;
+
+# Build with
+# sudo singularity build  icommands.sif icommands.def
+</code></pre>
+<p>An example to deploy to an HPC environment that uses <a href="http://modules.sourceforge.net/">Modules</a> with;</p>
+<pre><code>help([==[
+
+Description
+===========
+iRODS icommands v4.3.0.
+
+
+More information
+================
+ - Homepage: https://github.com/irods/irods_client_icommands
+]==])
+
+
+conflict(&quot;icommands&quot;)
+set_alias(&quot;iinit&quot;,&quot;/path/to/icommands.sif iinit&quot;)
+set_alias(&quot;ils&quot;,&quot;/path/to/icommands.sif ils&quot;)
+# add other icommands in a similar fashion. This can be done automatically via
+ihelp | awk '$2==&quot;-&quot;{print &quot;set_alias(\&quot;&quot;$1&quot;\&quot;,\&quot;/path/to/icommands.sif &quot;$1&quot;\&quot;)&quot;}' &gt;&gt; icommands/4.3.0.lua
+
+# Place icommands/4.3.0.lua in an appropriate location on your system
+</code></pre>
+<p>Some links fro the above;</p>
+<ul>
+<li><a href="https://easybuild.io/">easybuild</a>
+    EasyBuild is a software build and installation framework that allows you to manage (scientific) software on High Performance Computing (HPC) systems in an efficient way.</li>
+<li><a href="https://lmod.readthedocs.io/en/latest/190_Integration_of_EasyBuild_and_Lmod.html">Lmod</a>;
+    Lmod is a Lua based module system that easily handles the MODULEPATH Hierarchical problem. Environment Modules provide a convenient way to dynamically change the users’ environment through modulefiles. This includes easily adding or removing directories to the PATH environment variable. Modulefiles for Library packages provide environment variables that specify where the library and header files can be found.</li>
+</ul>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../Sysadmin/" class="btn btn-neutral float-left" title="General Notes"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../Queries/" class="btn btn-neutral float-right" title="Usefull Queries">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Database_tuning/" class="btn btn-neutral float-left" title="Tuning"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Sysadmin/" class="btn btn-neutral float-right" title="General Notes">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -128,10 +182,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../Sysadmin/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../Database_tuning/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../Queries/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../Sysadmin/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
