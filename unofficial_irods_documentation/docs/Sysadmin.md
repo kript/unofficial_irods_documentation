@@ -51,3 +51,21 @@ diff -c /etc/irods/server_config.json /etc/irods/server_config.json.20610.2022-0
           "plugin_name": "irods_rule_engine_plugin-irods_rule_language",
 --- 52,57 ----
 ```
+
+## Acting as another user
+
+(Illustrated in [#6561](https://github.com/irods/irods/issues/6561))
+
+A lot of the admin commands have the `-M` flag for rodsusers to effectively use _root_ like powers to act on an object et al that they do not have an ACL for.
+
+However that's not always what you want, sometime you want to act as another user (say to upload a file as them). In this case you can set the environment variable `clientUserName`, e.g.
+
+```bash
+# as rods account
+iput a.log /zone1/home/tom
+# a.log is in 'tom' homedir, but they have not ACL to access it.
+export clientUserName=tom
+iput a.log /zone1/home/tom
+# a.log is now owned by 'tom'
+```
+Note that this will only work for `rodsadmin` accounts - normal aka `rodsuser` users can't do this.
