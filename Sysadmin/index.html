@@ -68,6 +68,8 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#configuration-validation">Configuration Validation</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#acting-as-another-user">Acting as another user</a>
+    </li>
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../Server_setup/">Setup</a>
@@ -140,6 +142,18 @@
           &quot;plugin_name&quot;: &quot;irods_rule_engine_plugin-irods_rule_language&quot;,
 --- 52,57 ----
 </code></pre>
+<h2 id="acting-as-another-user">Acting as another user</h2>
+<p>(Illustrated in <a href="https://github.com/irods/irods/issues/6561">#6561</a>)</p>
+<p>A lot of the admin commands have the <code>-M</code> flag for rodsusers to effectively use <em>root</em> like powers to act on an object et al that they do not have an ACL for.</p>
+<p>However that's not always what you want, sometime you want to act as another user (say to upload a file as them). In this case you can set the environment variable <code>clientUserName</code>, e.g.</p>
+<pre><code class="language-bash"># as rods account
+iput a.log /zone1/home/tom
+# a.log is in 'tom' homedir, but they have not ACL to access it.
+export clientUserName=tom
+iput a.log /zone1/home/tom
+# a.log is now owned by 'tom'
+</code></pre>
+<p>Note that this will only work for <code>rodsadmin</code> accounts - normal aka <code>rodsuser</code> users can't do this.</p>
               
             </div>
           </div><footer>
