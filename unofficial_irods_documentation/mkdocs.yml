@@ -5,16 +5,18 @@ theme:
 nav:
     - Home: index.md
     - About: About.md
+    - Database:
+      - "Tuning": Database_tuning.md
     - Developer:
       - "Brief overview": Developer.md
       - "Python API": PythonAPI.md
-    - Database:
-      - "Tuning": Database_tuning.md
     - System Administration:
       - "Containerisation": Containerisation.md
       - "General Notes": Sysadmin.md
       - "Setup": Server_setup.md
       - "Usefull Queries": Queries.md
+    - User / Client notes:
+      - "User Notes": User.md
     # - "Initial deployment"
     # - "Metrics and monitoring"
     # - "Zone Management"
