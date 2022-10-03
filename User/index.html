@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Python API - Unofficial iRODS Documentation</title>
+    <title>User Notes - Unofficial iRODS Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Python API";
-        var mkdocs_page_input_path = "PythonAPI.md";
+        var mkdocs_page_name = "User Notes";
+        var mkdocs_page_input_path = "User.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -54,14 +54,10 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Developer</span></p>
-              <ul class="current">
+              <ul>
                   <li class="toctree-l1"><a class="reference internal" href="../Developer/">Brief overview</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Python API</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#get-the-size-of-all-objects-under-a-particular-collection">Get the size of all objects under a particular collection</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../PythonAPI/">Python API</a>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">System Administration</span></p>
@@ -76,8 +72,12 @@
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">User / Client notes</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../User/">User Notes</a>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">User Notes</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#icommands">icommands</a>
+    </li>
+    </ul>
                   </li>
               </ul>
       </div>
@@ -94,8 +94,8 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Developer &raquo;</li>
-      <li>Python API</li>
+          <li>User / Client notes &raquo;</li>
+      <li>User Notes</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -104,23 +104,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="python-api">Python API</h1>
-<p>Some notes on best use, along with some cookbook snippets that people might find helpful.</p>
-<h2 id="get-the-size-of-all-objects-under-a-particular-collection">Get the size of all objects under a particular collection</h2>
-<p>Code snippet from <a href="https://github.com/irods/python-irodsclient/issues/373">#373</a></p>
-<pre><code>total_size_in_bytes = 0
-n_data_objs = 0
-collection = session.collections.get('/myZone/home/myUser/home/testCollection')
-for info in collection.walk( ):
-    n_data_objs += len( info[2] )
-    total_size_in_bytes += sum( d.size for d in info[2] )
+                <h1 id="user-client-notes">User / Client Notes</h1>
+<h2 id="icommands">icommands</h2>
+<p>There is no garuntee of compatability between versions, so it's best to install the version that's running on the serevrs.
+If you have some installed already, you can use the <code>imiscsrvinfo</code> icommand to check the remote system is running the same version.</p>
+<p>If you didn't want to take a chance on the wrong version, you can ask the server. For example, from the command line (replace localhost with the server name);</p>
+<pre><code>root@irodsServer:/# echo &quot;hello&quot; | nc localhost 1247 | egrep -a rods
+&lt;relVersion&gt;rods4.2.10&lt;/relVersion&gt;
 </code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../Developer/" class="btn btn-neutral float-left" title="Brief overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../Containerisation/" class="btn btn-neutral float-right" title="Containerisation">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../Queries/" class="btn btn-neutral float-left" title="Usefull Queries"><span class="icon icon-circle-arrow-left"></span> Previous</a>
     </div>
 
   <hr/>
@@ -143,10 +139,8 @@ for info in collection.walk( ):
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../Developer/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../Queries/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-    
-      <span><a href="../Containerisation/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
