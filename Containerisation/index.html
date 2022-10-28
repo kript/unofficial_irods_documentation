@@ -103,56 +103,85 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="container-options">Container Options</h1>
-<h1 id="singularity">Singularity</h1>
-<h2 id="icommands">icommands</h2>
-<p>Contributed by <a href="https://github.com/ll4strw">leonardo</a>;</p>
-<pre><code># The simplest singularity def file to get you started. Customise appropriately
-# cat icommands.def
-Bootstrap: docker
-From: centos:centos7
+<h1 id="docker">Docker</h1>
+<h2 id="icommands-with-a-note-on-running-on-a-mac">icommands (with a note on running on a mac)</h2>
+<p>Taken from the <a href="https://groups.google.com/d/msgid/irod-chat/ca981c1b-a09c-43a2-b654-6aab3abd8218n%40googlegroups.com?utm_medium=email&amp;utm_source=footer">iRODS-Chat</a> mailing list, authored by Terrell Russell from RENCI.</p>
+<h3 id="start-a-container">start a container</h3>
+<p>not the <code>platform</code> flag if you are on a Mac!</p>
+<pre><code>docker run -d --platform linux/amd64 --name ub20icommands ubuntu:20.04 tail -f /dev/null
+docker exec -it ub20icommands /bin/bash
+</code></pre>
+<p>then within the container, install the iCommands</p>
+<pre><code>apt-get update
+apt-get install -y wget sudo lsb-release gnupg
+wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key add -
+echo &quot;deb [arch=amd64] https://packages.irods.org/apt/ $(lsb_release -sc) main&quot; | sudo tee /etc/apt/sources.list.d/renci-irods.list
+apt-get update
+apt-get install -y irods-icommands
+</code></pre>
+<p>then back on the host</p>
+<p><code>docker exec -it ub20icommands iinit</code></p>
+<p>then the rest of the iCommands are available</p>
+<p>``
+$ docker exec -it ub20icommands ils
+/tempZone/home/rods:</p>
+<pre><code>
+Note... putting and getting files are done from 'within' the container... so if you need to move data, you'll probably want to use a volume mount or docker cp to share between host and container.
+
+</code></pre>
+<p>$ docker cp filetoput.txt ub20icommands:/
+$ docker exec -it ub20icommands iput filetoput.txt foo
+$ docker exec -it ub20icommands ils
+/tempZone/home/rods:
+  foo</p>
+<pre><code>
 
 
-%post
+
+# Singularity
+
+## icommands
+
+Contributed by [leonardo](https://github.com/ll4strw);
+
+</code></pre>
+<h1 id="the-simplest-singularity-def-file-to-get-you-started-customise-appropriately">The simplest singularity def file to get you started. Customise appropriately</h1>
+<h1 id="cat-icommandsdef">cat icommands.def</h1>
+<p>Bootstrap: docker
+From: centos:centos7</p>
+<p>%post
     yum upgrade -y
     yum install -y wget epel-release
     yum install -y python36-jsonschema python36-psutil
     rpm --import https://packages.irods.org/irods-signing-key.asc
     wget -qO - https://packages.irods.org/renci-irods.yum.repo | tee /etc/yum.repos.d/renci-irods.yum.repo
-    yum install -y irods-icommands.x86_64
+    yum install -y irods-icommands.x86_64</p>
+<p>%environment
+    export LC_ALL=C</p>
+<p>%runscript
+    exec "$@"</p>
+<h1 id="build-with">Build with</h1>
+<h1 id="sudo-singularity-build-icommandssif-icommandsdef">sudo singularity build  icommands.sif icommands.def</h1>
+<pre><code>
+An example to deploy to an HPC environment that uses [Modules](http://modules.sourceforge.net/) with;
 
-%environment
-    export LC_ALL=C
-
-
-%runscript
-    exec &quot;$@&quot;
-
-# Build with
-# sudo singularity build  icommands.sif icommands.def
 </code></pre>
-<p>An example to deploy to an HPC environment that uses <a href="http://modules.sourceforge.net/">Modules</a> with;</p>
-<pre><code>help([==[
-
-Description
-===========
-iRODS icommands v4.3.0.
-
-
-More information
-================
- - Homepage: https://github.com/irods/irods_client_icommands
-]==])
-
-
-conflict(&quot;icommands&quot;)
-set_alias(&quot;iinit&quot;,&quot;/path/to/icommands.sif iinit&quot;)
-set_alias(&quot;ils&quot;,&quot;/path/to/icommands.sif ils&quot;)
-# add other icommands in a similar fashion. This can be done automatically via
-ihelp | awk '$2==&quot;-&quot;{print &quot;set_alias(\&quot;&quot;$1&quot;\&quot;,\&quot;/path/to/icommands.sif &quot;$1&quot;\&quot;)&quot;}' &gt;&gt; icommands/4.3.0.lua
-
-# Place icommands/4.3.0.lua in an appropriate location on your system
-</code></pre>
-<p>Some links fro the above;</p>
+<p>help([==[</p>
+<h1 id="description">Description</h1>
+<p>iRODS icommands v4.3.0.</p>
+<h1 id="more-information">More information</h1>
+<ul>
+<li>Homepage: https://github.com/irods/irods_client_icommands
+]==])</li>
+</ul>
+<p>conflict("icommands")
+set_alias("iinit","/path/to/icommands.sif iinit")
+set_alias("ils","/path/to/icommands.sif ils")</p>
+<h1 id="add-other-icommands-in-a-similar-fashion-this-can-be-done-automatically-via">add other icommands in a similar fashion. This can be done automatically via</h1>
+<p>ihelp | awk '$2=="-"{print "set_alias(\""$1"\",\"/path/to/icommands.sif "$1"\")"}' &gt;&gt; icommands/4.3.0.lua</p>
+<h1 id="place-icommands430lua-in-an-appropriate-location-on-your-system">Place icommands/4.3.0.lua in an appropriate location on your system</h1>
+<p>```</p>
+<p>Some links for the above;</p>
 <ul>
 <li><a href="https://easybuild.io/">easybuild</a>
     EasyBuild is a software build and installation framework that allows you to manage (scientific) software on High Performance Computing (HPC) systems in an efficient way.</li>
