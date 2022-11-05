@@ -8,7 +8,7 @@ Taken from the [iRODS-Chat](https://groups.google.com/d/msgid/irod-chat/ca981c1b
 
 ### start a container
 
-not the `platform` flag if you are on a Mac!
+note the `platform` flag if you are on a Mac!
 
 ```
 docker run -d --platform linux/amd64 --name ub20icommands ubuntu:20.04 tail -f /dev/null
@@ -28,7 +28,9 @@ apt-get install -y irods-icommands
 
 then back on the host
 
-`docker exec -it ub20icommands iinit`
+```
+docker exec -it ub20icommands iinit
+```
 
 then the rest of the iCommands are available
 
@@ -37,7 +39,7 @@ $ docker exec -it ub20icommands ils
 /tempZone/home/rods:
 ```
 
-Note... putting and getting files are done from 'within' the container... so if you need to move data, you'll probably want to use a volume mount or docker cp to share between host and container.
+Note... putting and getting files are done from 'within' the container... so if you need to move data, you'll probably want to use a volume mount or `docker cp` to share between host and container.
 
 ```
 $ docker cp filetoput.txt ub20icommands:/
