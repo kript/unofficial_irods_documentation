@@ -107,7 +107,7 @@
 <h2 id="icommands-with-a-note-on-running-on-a-mac">icommands (with a note on running on a mac)</h2>
 <p>Taken from the <a href="https://groups.google.com/d/msgid/irod-chat/ca981c1b-a09c-43a2-b654-6aab3abd8218n%40googlegroups.com?utm_medium=email&amp;utm_source=footer">iRODS-Chat</a> mailing list, authored by Terrell Russell from RENCI.</p>
 <h3 id="start-a-container">start a container</h3>
-<p>not the <code>platform</code> flag if you are on a Mac!</p>
+<p>note the <code>platform</code> flag if you are on a Mac!</p>
 <pre><code>docker run -d --platform linux/amd64 --name ub20icommands ubuntu:20.04 tail -f /dev/null
 docker exec -it ub20icommands /bin/bash
 </code></pre>
@@ -120,13 +120,14 @@ apt-get update
 apt-get install -y irods-icommands
 </code></pre>
 <p>then back on the host</p>
-<p><code>docker exec -it ub20icommands iinit</code></p>
+<pre><code>docker exec -it ub20icommands iinit
+</code></pre>
 <p>then the rest of the iCommands are available</p>
 <p>``
 $ docker exec -it ub20icommands ils
 /tempZone/home/rods:</p>
 <pre><code>
-Note... putting and getting files are done from 'within' the container... so if you need to move data, you'll probably want to use a volume mount or docker cp to share between host and container.
+Note... putting and getting files are done from 'within' the container... so if you need to move data, you'll probably want to use a volume mount or `docker cp` to share between host and container.
 
 </code></pre>
 <p>$ docker cp filetoput.txt ub20icommands:/
