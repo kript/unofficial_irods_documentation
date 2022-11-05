@@ -24,3 +24,4 @@ This site would not be possible without the following contributors - thank you!
 * [John Constable (ahem)](https://github.com/kript)
 * [leonardo](https://github.com/ll4strw)
 * [Sietse Snel](https://github.com/stsnel)
+* [Terrell Russell](https://github.com/trel)
