@@ -54,14 +54,16 @@ $ docker exec -it ub20icommands ils
 
 # Apptainer
 
+Install icommands on arbitrary GNU/Linux systems via [apptainer](https://apptainer.org/).
+
 ## icommands
+
+Contributed by [Leonardo](https://github.com/ll4strw).
+
+Create the following apptainer definition file
 
 ```
 # icommands.def
-# https://github.com/ll4strw
-# Modify appropriately and
-# Build with
-# sudo singularity build  icommands.sif icommands.def
 
 Bootstrap: docker
 From: centos:centos7
@@ -81,6 +83,12 @@ From: centos:centos7
 %runscript
     exec "$@"
 
+```
+
+and build using 
+
+```
+sudo apptainer build icommands.sif icommands.def
 ```
 
 To deploy the icommands container to an HPC environment that uses [EasyBuild](https://easybuild.io/) to deliver software modules create the following module template in an appropriate location on your system
