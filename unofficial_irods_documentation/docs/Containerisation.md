@@ -34,7 +34,7 @@ docker exec -it ub20icommands iinit
 
 then the rest of the iCommands are available
 
-``
+```
 $ docker exec -it ub20icommands ils
 /tempZone/home/rods:
 ```
@@ -52,18 +52,21 @@ $ docker exec -it ub20icommands ils
 
 
 
-# Singularity
+# Apptainer
+
+Install icommands on arbitrary GNU/Linux systems via [apptainer](https://apptainer.org/).
 
 ## icommands
 
-Contributed by [leonardo](https://github.com/ll4strw);
+Contributed by [Leonardo](https://github.com/ll4strw).
+
+Create the following apptainer definition file
 
 ```
-# The simplest singularity def file to get you started. Customise appropriately
-# cat icommands.def
+# icommands.def
+
 Bootstrap: docker
 From: centos:centos7
-
 
 %post
     yum upgrade -y
@@ -80,13 +83,19 @@ From: centos:centos7
 %runscript
     exec "$@"
 
-# Build with
-# sudo singularity build  icommands.sif icommands.def
 ```
 
-An example to deploy to an HPC environment that uses [Modules](http://modules.sourceforge.net/) with;
+and build using 
 
 ```
+sudo apptainer build icommands.sif icommands.def
+```
+
+To deploy the icommands container to an HPC environment that uses [EasyBuild](https://easybuild.io/) to deliver software modules create the following module template in an appropriate location on your system
+
+```
+-- cat icommands/4.3.0.lua
+
 help([==[
 
 Description
@@ -101,15 +110,19 @@ More information
 
 
 conflict("icommands")
-set_alias("iinit","/path/to/icommands.sif iinit")
-set_alias("ils","/path/to/icommands.sif ils")
-# add other icommands in a similar fashion. This can be done automatically via
-ihelp | awk '$2=="-"{print "set_alias(\""$1"\",\"/path/to/icommands.sif "$1"\")"}' >> icommands/4.3.0.lua
 
-# Place icommands/4.3.0.lua in an appropriate location on your system
 ```
 
-Some links for the above;
+then complete the template executing
+
+```
+/path/to/icommands.sif ihelp | awk '$2=="-"{print "set_alias(\""$1"\",\"/path/to/icommands.sif "$1"\")"}' >> icommands/4.3.0.lua
+```
+
+
+
+
+### Useful links
 
 * [easybuild](https://easybuild.io/)
     EasyBuild is a software build and installation framework that allows you to manage (scientific) software on High Performance Computing (HPC) systems in an efficient way.
