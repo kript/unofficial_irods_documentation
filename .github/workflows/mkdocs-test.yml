@@ -19,6 +19,6 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install pipenv
-          pipenv --python python3.6
+          pipenv --python 3
           pipenv install
       - run: cd unofficial_irods_documentation && pipenv run mkdocs build
