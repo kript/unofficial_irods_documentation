@@ -2,7 +2,9 @@
   "api_url": "https://api.languagetool.org/v2/check",
   "api_key": "",
   "dictionary": [
+    "ESnet",
     "RENCI",
+    "cloud-init",
     "iRODS",
     "mkdocs"
   ],
