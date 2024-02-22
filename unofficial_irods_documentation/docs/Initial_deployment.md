@@ -1,23 +1,31 @@
 # Initial Deployment
 
-_Here's an outline of our initial deployment documentation.  For each decision, we should provide some heuristics and/or advice to help the reader make the decision._
+__TODO write an introductory paragraph.__
 
-## PREREQUISITE: Use the system requirements to generate the following information.__
+## Prerequisites
 
-* Decide where and how the data will be stored. (local or remote, multiple copies, etc)
-* Estimate how much storage will be needed.
-* Estimate home many users (people and services) will have iRODS accounts.
-* Estimate how many metadata values will be stored
-* Estimate how many concurrent connections there will be.
-* What is the availability requirement of the system - does any of the infrastructure need to be HA in some way?
-* Determine the security protocols needed to protect the data. This includes encryption, access controls, and compliance with regulatory standards (e.g., GDPR, HIPAA).
-* Establish a strategy for data backup. Decide on the frequency of backups and the methods for data recovery in case of data loss.
-* Define the performance benchmarks for the system, including the speed of data retrieval and upload, processing times, and response times for user queries.
-* Plan for future expansion. Determine how the system will scale with increased data, more users, or additional functionalities.
-* Outline the maintenance procedures for the system, including regular updates and support structures for users.
-* Develop a comprehensive disaster recovery plan to ensure business continuity in case of major disruptions.
-* Assess the network requirements, including bandwidth, latency, and connectivity, to support the expected data traffic.
-* Implement monitoring tools for real-time tracking of system performance and automated reporting for regular assessments.
+Before making decisions about the iRODS deployment, its system requirements should be well understood. In particular, at least the following information should be gathered.
+
+* Customer
+  * performance benchmarks for the system, including the data transfer rate, processing times, and response times for user queries
+  * availability requirement of the system - does any of the infrastructure need to be HA in some way?
+  * security protocols needed to protect the data, e.g., encryption, access controls, and compliance with regulatory standards (GDPR, HIPAA, etc.)
+  * an estimate of how many users (people and services) will have iRODS accounts
+* Storage
+  * an estimate of how much storage will be needed
+  * how and where the data will be stored, i.e, local or remote, multiple copies, etc
+  * an estimate of how many metadata values (AVUs) will be stored
+* Network
+  * an estimate of how many concurrent connections will need to be supported
+  * network requirements, including bandwidth, latency, and connectivity, to support the expected data traffic
+* Monitoring tools for real-time tracking of system performance and automated reporting for regular assessments
+* Maintenance procedures for the system, including regular updates and support structures for users
+* Disaster Recovery
+  * data back up strategy, e.g., frequency of back ups, methods for data recovery in case of data loss, etc.
+  * comprehensive disaster recovery plan to ensure business continuity in case of major disruptions
+* Future expansion plan, system scaling for increased data, more users, and/or additional functionalities
+
+__TODO determine the best order for the remaining sections, and revised them.__
 
 ## Determining DBMS configuration
 
