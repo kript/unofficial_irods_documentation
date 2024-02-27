@@ -25,111 +25,115 @@ Before making decisions about the iRODS deployment, its system requirements shou
   * comprehensive disaster recovery plan to ensure business continuity in case of major disruptions
 * Future expansion plan, system scaling for increased data, more users, and/or additional functionalities
 
-__TODO determine the best order for the remaining sections, and revised them.__
-
 ## Determining DBMS configuration
 
-* Decide which DBMS to use. (MySQL, Oracle or PostgreSQL)
+__TODO write introductory paragraph.__
 
-  PostgreSQL is the DBMS primarily used by RENCI when developing iRODS and performance tuning it.  Unless there is a reason to use MySQL or Oracle, like your organization has a significant infrastructure built using one of them, you should use PostgreSQL.
+### Decide which DBMS to use
 
-* Determine specs for DBMS host(s).
+PostgreSQL is the DBMS primarily used by RENCI when developing iRODS and performance tuning it. Unless there is a reason to use MySQL or Oracle, like your organization has a significant infrastructure built using one of them, you should use PostgreSQL.
 
-  * For a small zone, a small VM to host the database can be enough to start as long as you are monitoring the CPU, disk, memory and network utilization so you know when to upgrade.
+### Determine specs for DBMS host(s)
 
-  * No of cores/hyperthreads requirements according to number of connections. iRODS doesn't have connection pooling, so each connection creates a new database connection.
+* For a small zone, a small VM to host the database can be enough to start as long as you are monitoring the CPU, disk, memory and network utilization so you know when to upgrade.
 
-  * Memory requirement relates to size of metadata and records in the database - the larger the no of records, the more the database will need to hold in memory, OR will end up with a lot of disk IO
+* No of cores/hyperthreads requirements according to number of connections. iRODS doesn't have connection pooling, so each connection creates a new database connection.
 
-    CyVerse has observed that the total size of the database is dominated by the total number of replicas, AVUs, and permissions. The total size of a PostgreSQL ICAT will approximately be `size(data) + size(avu) + size(acl)`, where `size(data) ~ (1 kiB) * num_data_obj * num_repl_per_obj`, `size(avu) ~ (200  B) * num_data_obj * num_avu_per_obj`, and `size(acl) ~ (200 B) * num_data_obj * num_perm_per_obj`.
+* Memory requirement relates to size of metadata and records in the database - the larger the no of records, the more the database will need to hold in memory, OR will end up with a lot of disk IO
 
-  * Disk requirements - if there is insufficient memory to hold all the data then the database will often be accessing the database files, so IOPS is important. If all the data can be held in memory, IOS is less important apart from speed of starting & backing up.
+  CyVerse has observed that the total size of the database is dominated by the total number of replicas, AVUs, and permissions. The total size of a PostgreSQL ICAT will approximately be `size(data) + size(avu) + size(acl)`, where `size(data) ~ (1 kiB) * num_data_obj * num_repl_per_obj`, `size(avu) ~ (200  B) * num_data_obj * num_avu_per_obj`, and `size(acl) ~ (200 B) * num_data_obj * num_perm_per_obj`.
 
-  * Network requirement is more impacted by latency than speed, since the database holds records rather than data.
+* Disk requirements - if there is insufficient memory to hold all the data then the database will often be accessing the database files, so IOPS is important. If all the data can be held in memory, IOS is less important apart from speed of starting & backing up.
 
-    * N.B. PostgreSQL has a max connection limit
+* Network requirement is more impacted by latency than speed, since the database holds records rather than data.
 
-  * Usage of all of the above should be monitored over time so that additional capacity can be added when needed.
+  * N.B. PostgreSQL has a max connection limit
 
-    * It is worth monitoring query latency as well, so trends can be seen. A simple starter might be to run a known consistent query and graph the results over time.
+* Usage of all of the above should be monitored over time so that additional capacity can be added when needed.
+
+  * It is worth monitoring query latency as well, so trends can be seen. A simple starter might be to run a known consistent query and graph the results over time.
 
 ## Determining iRODS configuration
 
-* Deployment topology
+__TODO write introductory paragraph.__
 
-  * Deciding whether catalog provider should be on the same server as the DBMS
+### Deployment topology
 
-    In general, it is better to have the catalog provider on a separate server, but there are cases where it makes sense to collocate the catalog provider and the DBMS as long as the DBMS is on a single host and is dedicated to iRODS.
+* Deciding whether catalog provider should be on the same server as the DBMS
 
-    * The iRODS zone will be small and lightly used. In other words, the zone won't have a lot of data objects and there won't be more than a couple of concurrent connections.
-    * The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used -- maybe less than 10 (??) concurrent connections.
+  In general, it is better to have the catalog provider on a separate server, but there are cases where it makes sense to collocate the catalog provider and the DBMS as long as the DBMS is on a single host and is dedicated to iRODS.
 
-  * Deciding how many catalog provider hosts to have.
+  * The iRODS zone will be small and lightly used. In other words, the zone won't have a lot of data objects and there won't be more than a couple of concurrent connections.
+  * The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used -- maybe less than 10 (??) concurrent connections.
 
-    It is non-trivial to run multiple catalog providers. Unless there is a requirement, such as HA, that demands multiple catalog providers, you should start with one, and scale out if it cannot handle the load. CyVerse has a single catalog provider that can sustain 100+ concurrent connections. They have had spikes of over 300 connections that stress the system unacceptably, so they are planning to move to multiple catalog providers in the future.
+* Deciding how many catalog provider hosts to have.
 
-  * Deciding if catalog provider should be a resource server.
+  It is non-trivial to run multiple catalog providers. Unless there is a requirement, such as HA, that demands multiple catalog providers, you should start with one, and scale out if it cannot handle the load. CyVerse has a single catalog provider that can sustain 100+ concurrent connections. They have had spikes of over 300 connections that stress the system unacceptably, so they are planning to move to multiple catalog providers in the future.
 
-    * How busy will the iRODS zone be?
+* Deciding if catalog provider should be a resource server.
+
+  * How busy will the iRODS zone be?
 
     If there will be lots of concurrent connections to the iRODS zone, it would better to offload the storage management responsibilities to a separate iRODS catalog consumer
 
-    * Will there be a lot of computationally intensive rule logic?
+  * Will there be a lot of computationally intensive rule logic?
 
     If the rule logic will consume a lot of memory on the catalog provider, this will mean less memory for the buffer cache used during file transfers, it might be better to offload storage management to a catalog consumer/resource server.
 
-    * Will data be physically stored on the iRODS server or stored remotely, i.e., will it be store on a disk directly attached to the server or somewhere else, like a NAS device or in the cloud?
+  * Will data be physically stored on the iRODS server or stored remotely, i.e., will it be store on a disk directly attached to the server or somewhere else, like a NAS device or in the cloud?
 
     If there will be multiple resource servers, in general, it is recommended to have a dedicated catalog provider that does not act as a resource server. This acts as a separation of concerns and allows for the catalog provider to be optimized for concurrency and more interactive network sessions, and the resource servers to be optimized for data transfer.
 
-* Determine specs for hosts
+### Determine specs for hosts
 
-  * Usage of all the below should be monitored over time so that additional capacity can be added when needed
+* Usage of all the below should be monitored over time so that additional capacity can be added when needed
 
-  * Catalog provider(s)
+* Catalog provider(s)
 
-    For a catalog provider that is on a separate host from the DBMS and isn't a resource server, the host will primarily act as a network switch yard. It will forward catalog queries and updates to the DBMS and data transfer requests to the appropriate resource server. For small files, data transfers will be routed through the catalog provider. The catalog provider will be the primary executor of any rule logic. This means that catalog provider performance will primarily be bound by concurrency, so it should have lots of cores. Also, its network interface should be tuned to minimize latency. The provider probably won't need a lot of memory or storage unless custom rule logic requires it.  The CyVerse catalog provider has 48 cores. It has 252 GiB of memory. It's way over-provisioned, It only uses ~10 GiB of memory, and even holding nearly 2 years of iRODS log files, it uses less than 400 GiB of disk.
+  For a catalog provider that is on a separate host from the DBMS and isn't a resource server, the host will primarily act as a network switch yard. It will forward catalog queries and updates to the DBMS and data transfer requests to the appropriate resource server. For small files, data transfers will be routed through the catalog provider. The catalog provider will be the primary executor of any rule logic. This means that catalog provider performance will primarily be bound by concurrency, so it should have lots of cores. Also, its network interface should be tuned to minimize latency. The provider probably won't need a lot of memory or storage unless custom rule logic requires it.  The CyVerse catalog provider has 48 cores. It has 252 GiB of memory. It's way over-provisioned, It only uses ~10 GiB of memory, and even holding nearly 2 years of iRODS log files, it uses less than 400 GiB of disk.
 
-  * Resource server(s)
+* Resource server(s)
 
-    If the resource server isn't also a catalog provider, it will primarily act as a DTN. [ESnet](https://fasterdata.es.net/DTN/) provides good advice on configuring a DTN.
+  If the resource server isn't also a catalog provider, it will primarily act as a DTN. [ESnet](https://fasterdata.es.net/DTN/) provides good advice on configuring a DTN.
 
-    * File system
+  * File system
 
-      A resource server that stores its replicas on DAS should have at least 1 GiB of memory for every 1 TiB of storage. (There is a reference for this somewhere. I just need to look it up.) This is to ensure that there is sufficient memory for the file system cache.
+    A resource server that stores its replicas on DAS should have at least 1 GiB of memory for every 1 TiB of storage. (There is a reference for this somewhere. I just need to look it up.) This is to ensure that there is sufficient memory for the file system cache.
 
-    * Cacheless S3
+  * Cacheless S3
 
-      A resource server that hosts a cacheless S3 resource should have storage available, since this resource temporarily stores its files locally before transferring to S3. The amount of storage required will depend on the volume of data in flight between the server and S3. A way to get an initial estimate would be to estimate S, the average size of the file that will be stored in S3, and estimate N, the expected number of concurrent requests for data on that resource at peak busy times. An initial storage size estimate would be S*N.
+    A resource server that hosts a cacheless S3 resource should have storage available, since this resource temporarily stores its files locally before transferring to S3. The amount of storage required will depend on the volume of data in flight between the server and S3. A way to get an initial estimate would be to estimate S, the average size of the file that will be stored in S3, and estimate N, the expected number of concurrent requests for data on that resource at peak busy times. An initial storage size estimate would be S*N.
 
 ## Deploying and configuring iRODS Zone
 
-* Unattended installation (See _Unattended Install_ on the [Installation - iRODS Docs](https://docs.irods.org/4.3.1/getting_started/installation/)).
+__TODO write introductory paragraph.__
 
-  * Deploying using a JSON file rather than scripting the responses to the setup questions is generally good practice because;
+### Unattended installation (See _Unattended Install_ on the [Installation - iRODS Docs](https://docs.irods.org/4.3.1/getting_started/installation/))
 
-    * It provides a way to version control the setup, which in turn allows CI style checks for linting, templating and verification.
-    * It is easier to integrate with deployment tools such as cloud-init, ansible, terraform and so on.
+* Deploying using a JSON file rather than scripting the responses to the setup questions is generally good practice because;
 
-  * Ansible or other provisioning tool
+  * It provides a way to version control the setup, which in turn allows CI style checks for linting, templating and verification.
+  * It is easier to integrate with deployment tools such as cloud-init, ansible, terraform and so on.
 
-    * Using configuration management with your iRODS systems is recommended to prevent changes made on one server not be applied to others on the zone. Ansible is used within the community
+### Ansible or other provisioning tool
 
-  * Version locking/pinning
+* Using configuration management with your iRODS systems is recommended to prevent changes made on one server not be applied to others on the zone. Ansible is used within the community
 
-    At this time, iRODS versions are not fully backwards compatible, even between point releases. To prevent an automatic update of system packages from breaking your iRODS zone, it is recommended that the installed version of iRODS be locked/pinned.
+### Version locking/pinning
 
-  * Controlling when iRODS starts
+At this time, iRODS versions are not fully backwards compatible, even between point releases. To prevent an automatic update of system packages from breaking your iRODS zone, it is recommended that the installed version of iRODS be locked/pinned.
 
-    The start order of iRODS processes is important. If they are started in the wrong order, some of them will fail to start. The DBMS must be started before the iRODS catalog service providers, and the catalog service providers must be started before the catalog resource consumers. To prevent the services from accidentally be started in the wrong order when the processes are spread over multiple hosts, it is not recommended to have them start automatically when the host is started. Instead, manually start them using a provisioning tool to ensure the processes are brought up in the correct order.
+### Controlling when iRODS starts
 
-  * DNS usage
+The start order of iRODS processes is important. If they are started in the wrong order, some of them will fail to start. The DBMS must be started before the iRODS catalog service providers, and the catalog service providers must be started before the catalog resource consumers. To prevent the services from accidentally be started in the wrong order when the processes are spread over multiple hosts, it is not recommended to have them start automatically when the host is started. Instead, manually start them using a provisioning tool to ensure the processes are brought up in the correct order.
 
-    * iRODs makes _enormous_ numbers of DNS calls. In 4.2.9 and later it can do a better job of caching, but it is recommended that your connection to the DNS system is low latency and/or that all the servers in the zone, including database servers, have entries in the /etc/hosts or /etc/irods/hosts files to prevent it reaching out to the DNS. Issues seem from slow or missed DNS lookups have been SYS_HEADER_READ_LEN errors where inter-server connections could not be established.
+### DNS usage
 
-  * Firewalls
+* iRODs makes _enormous_ numbers of DNS calls. In 4.2.9 and later it can do a better job of caching, but it is recommended that your connection to the DNS system is low latency and/or that all the servers in the zone, including database servers, have entries in the /etc/hosts or /etc/irods/hosts files to prevent it reaching out to the DNS. Issues seem from slow or missed DNS lookups have been SYS_HEADER_READ_LEN errors where inter-server connections could not be established.
 
-    Institutional firewalls often sever connections that have been idle, i.e., had no packet traffic, for a little while. CyVerse has observed this time to be as short as five minutes. When iRODS uses parallel transfer, the primary connection will be idle during the transfer. If the transfer takes long enough, a firewall may sever the primary connection, causing the transfer to fail. CyVerse has observed It is recommended to set the TCP keep-alive time to something like 2 minutes.
+### Firewalls
+
+Institutional firewalls often sever connections that have been idle, i.e., had no packet traffic, for a little while. CyVerse has observed this time to be as short as five minutes. When iRODS uses parallel transfer, the primary connection will be idle during the transfer. If the transfer takes long enough, a firewall may sever the primary connection, causing the transfer to fail. CyVerse has observed It is recommended to set the TCP keep-alive time to something like 2 minutes.
 
 ## Advice on choosing iRODS clients
 
