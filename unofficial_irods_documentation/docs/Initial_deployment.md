@@ -1,6 +1,6 @@
 # Initial Deployment
 
-__TODO write an introductory paragraph.__
+<!-- TODO write an introductory paragraph. -->
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ Before making decisions about the iRODS deployment, its system requirements shou
 
 ## Determining DBMS configuration
 
-__TODO write introductory paragraph.__
+<!-- TODO write introductory paragraph. -->
 
 ### Decide which DBMS to use
 
@@ -35,27 +35,51 @@ PostgreSQL is the DBMS primarily used by RENCI when developing iRODS and perform
 
 ### Determine specs for DBMS host(s)
 
-* For a small zone, a small VM to host the database can be enough to start as long as you are monitoring the CPU, disk, memory and network utilization so you know when to upgrade.
+<!-- TODO write introductory paragraph. -->
 
-* No of cores/hyperthreads requirements according to number of connections. iRODS doesn't have connection pooling, so each connection creates a new database connection.
+For a small zone, the DBMS can be co-hosted with the catalog service provider. In this case, a small zone doesn't have a lot of data objects or lots of metadata attached to its data object. It also doesn't have computationally intensive iRODS rules that would compete with the DBMS for memory and CPU.
 
-* Memory requirement relates to size of metadata and records in the database - the larger the no of records, the more the database will need to hold in memory, OR will end up with a lot of disk IO
+<!-- TODO write transitional paragraph. -->
 
-  CyVerse has observed that the total size of the database is dominated by the total number of replicas, AVUs, and permissions. The total size of a PostgreSQL ICAT will approximately be `size(data) + size(avu) + size(acl)`, where `size(data) ~ (1 kiB) * num_data_obj * num_repl_per_obj`, `size(avu) ~ (200  B) * num_data_obj * num_avu_per_obj`, and `size(acl) ~ (200 B) * num_data_obj * num_perm_per_obj`.
+#### Cores/Hyperthreads
+
+The number of cores required depends on the number of concurrent connections. iRODS doesn't have connection pooling, so each connection creates a new database connection. This means that the number of concurrent database connections will be the same as the number of concurrent connections to the iRODS catalog provider. This is not necessarily the same as the number of concurrent user connections, since deferred rule executions also connect to iRODS creating database connections. A good estimate of the expected number of concurrent database connections is the sum of the expected number of concurrent user connections and the configured maximum number of concurrent rule engine processes (`advanced_settings.maximum_number_of_concurrent_rule_engine_server_processes` in `/etc/irods/server_config.json` on the catalog provider).
+
+Sanger has observed that 2 cores can serve over 100 concurrent DB connections and 64 cores can handle at least 2500.
+
+#### Memory
+
+The amount of memory required depends largely on the number of replicas, permissions, and AVU metadata values stored in the database. The entire database needs to be held in memory, or the DBMS will end up having to load records from disk as needed, which will dramatically degrade query performance.
+
+CyVerse has observed that the total size of a PostgreSQL ICAT DB will approximately be `size(data) + size(avu) + size(acl)`, where `size(data) ~ (1000 B) * num_data_obj * num_repl_per_obj`, `size(avu) ~ (200  B) * num_data_obj * num_avu_per_obj`, and `size(acl) ~ (200 B) * num_data_obj * num_perm_per_obj`.
+
+#### Storage
+
+<!-- TODO write this section -->
 
 * Disk requirements - if there is insufficient memory to hold all the data then the database will often be accessing the database files, so IOPS is important. If all the data can be held in memory, IOS is less important apart from speed of starting & backing up.
+
+#### Network
+
+<!-- TODO write this section -->
 
 * Network requirement is more impacted by latency than speed, since the database holds records rather than data.
 
   * N.B. PostgreSQL has a max connection limit
 
-* Usage of all of the above should be monitored over time so that additional capacity can be added when needed.
+### Monitoring
 
+<!-- TODO write this section -->
+
+* Monitoring to know when to upgrade
+
+  * Usage of all of the above should be monitored over time so that additional capacity can be added when needed.
+  * CPU, disk, memory, and network utilization
   * It is worth monitoring query latency as well, so trends can be seen. A simple starter might be to run a known consistent query and graph the results over time.
 
 ## Determining iRODS configuration
 
-__TODO write introductory paragraph.__
+<!-- TODO write this section -->
 
 ### Deployment topology
 
@@ -106,7 +130,7 @@ __TODO write introductory paragraph.__
 
 ## Deploying and configuring iRODS Zone
 
-__TODO write introductory paragraph.__
+<!-- TODO write this section -->
 
 ### Unattended installation (See _Unattended Install_ on the [Installation - iRODS Docs](https://docs.irods.org/4.3.1/getting_started/installation/))
 
@@ -136,5 +160,7 @@ The start order of iRODS processes is important. If they are started in the wron
 Institutional firewalls often sever connections that have been idle, i.e., had no packet traffic, for a little while. CyVerse has observed this time to be as short as five minutes. When iRODS uses parallel transfer, the primary connection will be idle during the transfer. If the transfer takes long enough, a firewall may sever the primary connection, causing the transfer to fail. CyVerse has observed It is recommended to set the TCP keep-alive time to something like 2 minutes.
 
 ## Advice on choosing iRODS clients
+
+<!-- TODO write this section -->
 
 Start with the ones published by RENCI: iCommands and MetaLNX. If they don't meet all of your user's needs, add in Cyberduck. If there are still use cases that aren't supported, branch out to other clients like Baton, GoCommands, etc.
