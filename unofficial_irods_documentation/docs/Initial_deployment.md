@@ -55,11 +55,11 @@ CyVerse has observed that the total size of a PostgreSQL ICAT DB will approximat
 
 #### Storage
 
-If there is insufficient memory to hold all the entire database, then the DBMS will often be accessing database files, so IOPS is critical. If all the data can be held in memory, IOPS is still important. The blog post [Understanding Postgres IOPS](https://www.crunchydata.com/blog/understanding-postgres-iops) explains why in more detail.
+If there is insufficient memory to hold all the entire database, then the DBMS will often be accessing database files, so IOPS is critical. If all the data can be held in memory, IOPS is still important but less so. The blog post [Understanding Postgres IOPS](https://www.crunchydata.com/blog/understanding-postgres-iops) explains why in more detail. IOPS is weakly correlated with the number of concurrent database connections, so expected number of connections can be used to estimate required IOPS.
 
-CyVerse's database barely fits into memory. During a one hour observation period, they had between 70 and 130 concurrent DB connections (90 on average). The DBMS was performing 140 IOPS on average with bursts of up to 3000.
+During a one hour observation period, CyVerse had between 70 and 130 concurrent DB connections (90 on average). The DBMS was performing 140 IOPS on average with bursts of up to 3000.
 
-The storage will need to be able to hold the entire database as well write-ahead logs and DBMS bookkeeping information. The database files tend to grow larger over time due to rows in the middle of the file becoming invalidated due to deletes and updates. (Eventually these rows will be overwritten.)
+The storage will need to be able to hold the entire database as well write-ahead logs and DBMS bookkeeping information. The database files tend to grow larger over time due to rows in the middle of the file becoming invalidated due to deletes and updates. (Eventually these rows will be overwritten.) This growth will need to be accounted for when estimating how much storage will be needed.
 
 CyVerse's database is approximately 900 GiB in size, but PostgreSQL is using 1400 GiB of storage.
 
