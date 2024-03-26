@@ -65,11 +65,11 @@ CyVerse's database is approximately 900 GiB in size, but PostgreSQL is using 140
 
 #### Network
 
-<!-- TODO write this section -->
+Since the iRODS catalog provider will be making lots a requests to the DBMS with nearly all of these requests and their responses only requiring a small amount of data being transferred, the latency of the network connection between the catalog provider and the DBMS should be as small as reasonably possible.
 
-* Network requirement is more impacted by latency than speed, since the database holds records rather than data.
+Network throughput is not that important. Over a one day period, CyVerse observed their catalog database had an average throughput of 4 MiB/s with a peak of 11 MiB/s.
 
-  * N.B. PostgreSQL has a max connection limit
+Institutional firewall appliances are known for increasing network jitter. They also have a habit of severing connections that are idle for too long. Some iRODS queries can take a few minutes to execute on a large database. To reduce the likelihood of broken database connections causing problems for users, it is recommended to not place the DBMS and the iRODS catalog provider on opposite sides of an institutional firewall.
 
 ### Monitoring
 
