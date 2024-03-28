@@ -25,3 +25,5 @@ nav:
     #   - "Compound Trees"
     #   - "File system resources"
     #   - "S3 resources"
+markdown_extensions:
+  - admonition: {}
