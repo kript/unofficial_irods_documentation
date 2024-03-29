@@ -35,11 +35,10 @@ PostgreSQL is the DBMS primarily used by RENCI when developing iRODS and perform
 
 ### Determine specs for DBMS host(s)
 
-<!-- TODO write introductory paragraph. -->
+If the iRODS installation will have a dedicated DBMS, it is important to estimate the required number of cores, how much memory and storage will be needed, and storage and network performance. It is still important to gather these estimates if the installation will share a DBMS so that the impact on the DBMS can be understood.
 
-For a small zone, the DBMS can be co-hosted with the catalog service provider. In this case, a small zone doesn't have a lot of data objects or lots of metadata attached to its data object. It also doesn't have computationally intensive iRODS rules that would compete with the DBMS for memory and CPU.
-
-<!-- TODO write transitional paragraph. -->
+!!! note
+    For a small zone, the DBMS can be co-hosted with the catalog service provider. In this case, a small zone doesn't have a lot of data objects, lots of metadata attached to its data object, nor computationally intensive iRODS rules that would compete with the DBMS for memory and CPU.
 
 #### Cores/Hyperthreads
 
