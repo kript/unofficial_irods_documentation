@@ -70,16 +70,6 @@ Network throughput is not that important. Over a one day period, CyVerse observe
 
 Institutional firewall appliances are known for increasing network jitter. They also have a habit of severing connections that are idle for too long. Some iRODS queries can take a few minutes to execute on a large database. To reduce the likelihood of broken database connections causing problems for users, it is recommended to not place the DBMS and the iRODS catalog provider on opposite sides of an institutional firewall.
 
-### Monitoring
-
-<!-- TODO write this section -->
-
-* Monitoring to know when to upgrade
-
-  * Usage of all of the above should be monitored over time so that additional capacity can be added when needed.
-  * CPU, disk, memory, and network utilization
-  * It is worth monitoring query latency as well, so trends can be seen. A simple starter might be to run a known consistent query and graph the results over time.
-
 ## Determining iRODS configuration
 
 <!-- TODO write this section -->
