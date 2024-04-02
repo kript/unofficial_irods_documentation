@@ -27,7 +27,7 @@ Before making decisions about the iRODS deployment, its system requirements shou
 
 ## Determining DBMS configuration
 
-<!-- TODO write introductory paragraph. -->
+iRODS hosts its catalog DB in a relational DBMS. Here is some advice on choosing a DBMS technology, determining what performance specs are required, and configuring it.
 
 ### Decide which DBMS to use
 
