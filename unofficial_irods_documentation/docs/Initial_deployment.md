@@ -76,34 +76,43 @@ Institutional firewall appliances are known for increasing network jitter. They 
 
 ### Deployment topology
 
-* Deciding whether catalog provider should be on the same server as the DBMS
+<!-- TODO write this section -->
 
-  In general, it is better to have the catalog provider on a separate server, but there are cases where it makes sense to collocate the catalog provider and the DBMS as long as the DBMS is on a single host and is dedicated to iRODS.
+#### Deciding whether to colocate catalog provider and DBMS
 
-  * The iRODS zone will be small and lightly used. In other words, the zone won't have a lot of data objects and there won't be more than a couple of concurrent connections.
-  * The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used -- maybe less than 10 (??) concurrent connections.
+In general, it is better to have the catalog provider on a separate server that the DBMS, but there are cases where it makes sense to collocate them as long as the DBMS is on a single host and is dedicated to iRODS.
 
-* Deciding how many catalog provider hosts to have.
+1. The iRODS zone will be small and lightly used. In other words, the zone won't have a lot of data objects and there won't be more than a few concurrent connections.
+1. The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used -- maybe less than 10 concurrent connections.
 
-  It is non-trivial to run multiple catalog providers. Unless there is a requirement, such as HA, that demands multiple catalog providers, you should start with one, and scale out if it cannot handle the load. CyVerse has a single catalog provider that can sustain 100+ concurrent connections. They have had spikes of over 300 connections that stress the system unacceptably, so they are planning to move to multiple catalog providers in the future.
+#### Deciding if catalog provider should be a resource server.
 
-* Deciding if catalog provider should be a resource server.
+<!-- TODO write this section -->
 
-  * How busy will the iRODS zone be?
+* How busy will the iRODS zone be?
 
-    If there will be lots of concurrent connections to the iRODS zone, it would better to offload the storage management responsibilities to a separate iRODS catalog consumer
+  If there will be lots of concurrent connections to the iRODS zone, it would better to offload the storage management responsibilities to a separate iRODS catalog consumer
 
-  * Will there be a lot of computationally intensive rule logic?
+* Will there be a lot of computationally intensive rule logic?
 
-    If the rule logic will consume a lot of memory on the catalog provider, this will mean less memory for the buffer cache used during file transfers, it might be better to offload storage management to a catalog consumer/resource server.
+  If the rule logic will consume a lot of memory on the catalog provider, this will mean less memory for the buffer cache used during file transfers, it might be better to offload storage management to a catalog consumer/resource server.
 
-  * Will data be physically stored on the iRODS server or stored remotely, i.e., will it be store on a disk directly attached to the server or somewhere else, like a NAS device or in the cloud?
+* Will data be physically stored on the iRODS server or stored remotely, i.e., will it be store on a disk directly attached to the server or somewhere else, like a NAS device or in the cloud?
 
-    If there will be multiple resource servers, in general, it is recommended to have a dedicated catalog provider that does not act as a resource server. This acts as a separation of concerns and allows for the catalog provider to be optimized for concurrency and more interactive network sessions, and the resource servers to be optimized for data transfer.
+  If there will be multiple resource servers, in general, it is recommended to have a dedicated catalog provider that does not act as a resource server. This acts as a separation of concerns and allows for the catalog provider to be optimized for concurrency and more interactive network sessions, and the resource servers to be optimized for data transfer.
+
+#### Deciding how many catalog provider hosts to have.
+
+<!-- TODO write this section -->
+
+It is non-trivial to run multiple catalog providers. Unless there is a requirement, such as HA, that demands multiple catalog providers, you should start with one, and scale out if it cannot handle the load. CyVerse has a single catalog provider that can sustain 100+ concurrent connections. They have had spikes of over 300 connections that stress the system unacceptably, so they are planning to move to multiple catalog providers in the future.
+
 
 ### Determine specs for hosts
 
-* Usage of all the below should be monitored over time so that additional capacity can be added when needed
+<!-- TODO write this section -->
+
+Usage of all the below should be monitored over time so that additional capacity can be added when needed
 
 * Catalog provider(s)
 
@@ -127,14 +136,18 @@ Institutional firewall appliances are known for increasing network jitter. They 
 
 ### Unattended installation (See _Unattended Install_ on the [Installation - iRODS Docs](https://docs.irods.org/4.3.1/getting_started/installation/))
 
-* Deploying using a JSON file rather than scripting the responses to the setup questions is generally good practice because;
+<!-- TODO write this section -->
 
-  * It provides a way to version control the setup, which in turn allows CI style checks for linting, templating and verification.
-  * It is easier to integrate with deployment tools such as cloud-init, ansible, terraform and so on.
+Deploying using a JSON file rather than scripting the responses to the setup questions is generally good practice because;
+
+* It provides a way to version control the setup, which in turn allows CI style checks for linting, templating and verification.
+* It is easier to integrate with deployment tools such as cloud-init, ansible, terraform and so on.
 
 ### Ansible or other provisioning tool
 
-* Using configuration management with your iRODS systems is recommended to prevent changes made on one server not be applied to others on the zone. Ansible is used within the community
+<!-- TODO write this section -->
+
+Using configuration management with your iRODS systems is recommended to prevent changes made on one server not be applied to others on the zone. Ansible is used within the community
 
 ### Version locking/pinning
 
@@ -146,7 +159,9 @@ The start order of iRODS processes is important. If they are started in the wron
 
 ### DNS usage
 
-* iRODs makes _enormous_ numbers of DNS calls. In 4.2.9 and later it can do a better job of caching, but it is recommended that your connection to the DNS system is low latency and/or that all the servers in the zone, including database servers, have entries in the /etc/hosts or /etc/irods/hosts files to prevent it reaching out to the DNS. Issues seem from slow or missed DNS lookups have been SYS_HEADER_READ_LEN errors where inter-server connections could not be established.
+<!-- TODO write this section -->
+
+iRODs makes _enormous_ numbers of DNS calls. In 4.2.9 and later it can do a better job of caching, but it is recommended that your connection to the DNS system is low latency and/or that all the servers in the zone, including database servers, have entries in the /etc/hosts or /etc/irods/hosts files to prevent it reaching out to the DNS. Issues seem from slow or missed DNS lookups have been SYS_HEADER_READ_LEN errors where inter-server connections could not be established.
 
 ### Firewalls
 
