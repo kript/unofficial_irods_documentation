@@ -85,28 +85,19 @@ In general, it is better to have the catalog provider on a separate server that 
 1. The iRODS zone will be small and lightly used. In other words, the zone won't have a lot of data objects and there won't be more than a few concurrent connections.
 1. The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used -- maybe less than 10 concurrent connections.
 
-#### Deciding if catalog provider should be a resource server.
+#### Deciding if catalog provider should be a resource server
 
-<!-- TODO write this section -->
+Here are some cases when the catalog provider should not also be a resource server.
 
-* How busy will the iRODS zone be?
+1. If there will be lots of concurrent connections to the iRODS zone, it would better to offload the storage management responsibilities to a separate iRODS catalog consumer.
+1. If the rule logic will consume a lot of memory on the catalog provider, this will mean less memory for the buffer cache used during file transfers, it might be better to offload storage management to a catalog consumer.
+1. If there will be multiple resource servers, in general, it is recommended to have a dedicated catalog provider that does not act as a resource server. This acts as a separation of concerns and allows for the catalog provider to be optimized for concurrency and more interactive network sessions, and the resource servers to be optimized for data transfer.
 
-  If there will be lots of concurrent connections to the iRODS zone, it would better to offload the storage management responsibilities to a separate iRODS catalog consumer
-
-* Will there be a lot of computationally intensive rule logic?
-
-  If the rule logic will consume a lot of memory on the catalog provider, this will mean less memory for the buffer cache used during file transfers, it might be better to offload storage management to a catalog consumer/resource server.
-
-* Will data be physically stored on the iRODS server or stored remotely, i.e., will it be store on a disk directly attached to the server or somewhere else, like a NAS device or in the cloud?
-
-  If there will be multiple resource servers, in general, it is recommended to have a dedicated catalog provider that does not act as a resource server. This acts as a separation of concerns and allows for the catalog provider to be optimized for concurrency and more interactive network sessions, and the resource servers to be optimized for data transfer.
-
-#### Deciding how many catalog provider hosts to have.
+#### Deciding how many catalog provider hosts to have
 
 <!-- TODO write this section -->
 
 It is non-trivial to run multiple catalog providers. Unless there is a requirement, such as HA, that demands multiple catalog providers, you should start with one, and scale out if it cannot handle the load. CyVerse has a single catalog provider that can sustain 100+ concurrent connections. They have had spikes of over 300 connections that stress the system unacceptably, so they are planning to move to multiple catalog providers in the future.
-
 
 ### Determine specs for hosts
 
