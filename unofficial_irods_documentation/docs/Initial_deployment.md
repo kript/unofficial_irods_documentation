@@ -76,7 +76,7 @@ Institutional firewall appliances are known for increasing network jitter. They 
 
 ### Deployment topology
 
-<!-- TODO write this section -->
+iRODS support a variety of deployment topologies. When determining which deployment topology to use, the system architect needs to decide whether or not to host the DBMS separately and whether or not to have separate resource servers among other things.
 
 #### Deciding whether to colocate catalog provider and DBMS
 
@@ -94,8 +94,6 @@ Here are some cases when the catalog provider should not also be a resource serv
 1. If there will be multiple resource servers, in general, it is recommended to have a dedicated catalog provider that does not act as a resource server. This acts as a separation of concerns and allows for the catalog provider to be optimized for concurrency and more interactive network sessions, and the resource servers to be optimized for data transfer.
 
 #### Deciding how many catalog provider hosts to have
-
-<!-- TODO write this section -->
 
 It is non-trivial to run multiple catalog providers. Unless there is a requirement, such as HA, that demands multiple catalog providers, you should start with one, and scale out if it cannot handle the load. CyVerse has a single catalog provider that can sustain 100+ concurrent connections. They have had spikes of over 300 connections that stress the system unacceptably, so they are planning to move to multiple catalog providers in the future.
 
