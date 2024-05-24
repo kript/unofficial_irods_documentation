@@ -103,21 +103,19 @@ It is non-trivial to run multiple catalog providers. Unless there is a requireme
 
 Usage of all the below should be monitored over time so that additional capacity can be added when needed
 
-* Catalog provider(s)
+#### Catalog provider(s)
 
-  For a catalog provider that is on a separate host from the DBMS and isn't a resource server, the host will primarily act as a network switch yard. It will forward catalog queries and updates to the DBMS and data transfer requests to the appropriate resource server. For small files, data transfers will be routed through the catalog provider. The catalog provider will be the primary executor of any rule logic. This means that catalog provider performance will primarily be bound by concurrency, so it should have lots of cores. Also, its network interface should be tuned to minimize latency. The provider probably won't need a lot of memory or storage unless custom rule logic requires it.  The CyVerse catalog provider has 48 cores. It has 252 GiB of memory. It's way over-provisioned, It only uses ~10 GiB of memory, and even holding nearly 2 years of iRODS log files, it uses less than 400 GiB of disk.
+For a catalog provider that is on a separate host from the DBMS and isn't a resource server, the host will primarily act as a network switch yard. It will forward catalog queries and updates to the DBMS and data transfer requests to the appropriate resource server. For small files, data transfers will be routed through the catalog provider. The catalog provider will be the primary executor of any rule logic. This means that catalog provider performance will primarily be bound by concurrency, so it should have lots of cores. Also, its network interface should be tuned to minimize latency. The provider probably won't need a lot of memory or storage unless custom rule logic requires it.  The CyVerse catalog provider has 48 cores. It also has 252 GiB of memory, which is way too much. It only uses ~10 GiB of memory. The provider uses less than 400 GiB of disk, even holding nearly 2 years of iRODS log files.
 
-* Resource server(s)
+#### Resource server(s)
 
-  If the resource server isn't also a catalog provider, it will primarily act as a DTN. [ESnet](https://fasterdata.es.net/DTN/) provides good advice on configuring a DTN.
+The recommended specs for resource server vary greatly depending on whether or not the storage is local to the resource server. One thing all resource servers have in common is the need for a high speed network connection tuned for file transfer. What follows is some other recommendations.
 
-  * File system
+If the resource server is a catalog consumer, it will primarily act as a DTN. [ESnet](https://fasterdata.es.net/DTN/) provides good advice on configuring a DTN.
 
-    A resource server that stores its replicas on DAS should have at least 1 GiB of memory for every 1 TiB of storage. (There is a reference for this somewhere. I just need to look it up.) This is to ensure that there is sufficient memory for the file system cache.
+As a rule of thumb, resource server that stores its replicas on DAS should have at least 1 GiB of memory for each 1 TiB of storage. (See [Ceph data storage recommendations](https://docs.ceph.com/en/mimic/start/hardware-recommendations/#hard-disk-drives).) This is to ensure that there is sufficient memory for the file system cache.
 
-  * Cacheless S3
-
-    A resource server that hosts a cacheless S3 resource should have storage available, since this resource temporarily stores its files locally before transferring to S3. The amount of storage required will depend on the volume of data in flight between the server and S3. A way to get an initial estimate would be to estimate S, the average size of the file that will be stored in S3, and estimate N, the expected number of concurrent requests for data on that resource at peak busy times. An initial storage size estimate would be S*N.
+A resource server that hosts a cacheless S3 resource should have storage available since this resource temporarily stores its files locally before transferring to S3. The amount of storage required will depend on the volume of data in flight between the server and S3. A way to get an initial estimate would be to estimate `S`, the largest expected size of files that will be stored in S3, and estimate `N`, the expected number of concurrent requests for data on that resource at peak busy times. An initial storage size estimate would be `S*N`.
 
 ## Deploying and configuring iRODS Zone
 
