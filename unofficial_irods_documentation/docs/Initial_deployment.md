@@ -99,9 +99,7 @@ It is non-trivial to run multiple catalog providers. Unless there is a requireme
 
 ### Determine specs for hosts
 
-<!-- TODO write this section -->
-
-Usage of all the below should be monitored over time so that additional capacity can be added when needed
+This section gives advice on determining what hardware to buy and how to configure it for iRODS. Usage of all the below should be monitored over time so that its configuration can be tuned and additional capacity can be added when needed.
 
 #### Catalog provider(s)
 
