@@ -72,7 +72,7 @@ Institutional firewall appliances are known for increasing network jitter. They 
 
 ## Determining iRODS configuration
 
-<!-- TODO write this section -->
+This section gives advice on how to choosing and configuring hosts for iRODS and its catalog DBMS.
 
 ### Deployment topology
 
