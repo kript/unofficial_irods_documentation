@@ -119,14 +119,14 @@ A resource server that hosts a cacheless S3 resource should have storage availab
 
 <!-- TODO write this section -->
 
-### Unattended installation (See _Unattended Install_ on the [Installation - iRODS Docs](https://docs.irods.org/4.3.1/getting_started/installation/))
+### Unattended installation
 
-<!-- TODO write this section -->
+iRODS provides a way to perform an unattended installation using a file that defines the server's deployed configuration. Deploying using a predefined settings file rather than scripting the responses to the setup questions is generally good practice because of the following.
 
-Deploying using a JSON file rather than scripting the responses to the setup questions is generally good practice because;
-
-* It provides a way to version control the setup, which in turn allows CI style checks for linting, templating and verification.
+* It provides a way to version control the setup, which in turn allows CI style checks for linting, templating, and verification.
 * It is easier to integrate with deployment tools such as cloud-init, ansible, terraform and so on.
+
+The _Unattended Install_ section on [Installation - iRODS Docs](https://docs.irods.org/4.3.2/getting_started/installation/) describes how to perform an unattended installation.
 
 ### Ansible or other provisioning tool
 
