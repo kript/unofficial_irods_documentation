@@ -130,9 +130,7 @@ The _Unattended Install_ section on [Installation - iRODS Docs](https://docs.iro
 
 ### Ansible or other provisioning tool
 
-<!-- TODO write this section -->
-
-Using configuration management with your iRODS systems is recommended to prevent changes made on one server not be applied to others on the zone. Ansible is used within the community
+Using a configuration management tool to configure and deploy an iRODS system is recommended to ensure all of the servers have a consistent configuration. Ansible is used within the community, so finding help for using Ansible with iRODS will be easier that for other tools..
 
 ### Version locking/pinning
 
