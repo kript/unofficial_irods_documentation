@@ -142,9 +142,7 @@ The start order of iRODS processes is important. If they are started in the wron
 
 ### DNS usage
 
-<!-- TODO write this section -->
-
-iRODs makes _enormous_ numbers of DNS calls. In 4.2.9 and later it can do a better job of caching, but it is recommended that your connection to the DNS system is low latency and/or that all the servers in the zone, including database servers, have entries in the /etc/hosts or /etc/irods/hosts files to prevent it reaching out to the DNS. Issues seem from slow or missed DNS lookups have been SYS_HEADER_READ_LEN errors where inter-server connections could not be established.
+iRODs relies heavily on name resolution. It is recommended that your connection to DNS is low latency and/or that all the servers in the zone, including database servers, have entries in `/etc/irods/server_config.json` or `/etc/hosts` to prevent it reaching out to the DNS. When server-to-server connections cannot be established due to slow or missed DNS lookups `SYS_HEADER_READ_LEN` errors are reported.
 
 ### Firewalls
 
