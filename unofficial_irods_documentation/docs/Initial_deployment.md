@@ -115,9 +115,9 @@ As a rule of thumb, resource server that stores its replicas on DAS should have 
 
 A resource server that hosts a cacheless S3 resource should have storage available since this resource temporarily stores its files locally before transferring to S3. The amount of storage required will depend on the volume of data in flight between the server and S3. A way to get an initial estimate would be to estimate `S`, the largest expected size of files that will be stored in S3, and estimate `N`, the expected number of concurrent requests for data on that resource at peak busy times. An initial storage size estimate would be `S*N`.
 
-## Deploying and configuring iRODS Zone
+## Deploying iRODS
 
-<!-- TODO write this section -->
+This section provides advice on deploying an iRODS Zone.
 
 ### Unattended installation
 
