@@ -150,6 +150,4 @@ Institutional firewalls often sever connections that have been idle, i.e., had n
 
 ## Advice on choosing iRODS clients
 
-<!-- TODO write this section -->
-
-Start with the ones published by RENCI: iCommands and MetaLNX. If they don't meet all of your user's needs, add in Cyberduck. If there are still use cases that aren't supported, branch out to other clients like Baton, GoCommands, etc.
+There are many iRODS clients of varying maturity and capabilities. Most get abandoned after a few years, unfortunately. When choosing which clients to support, it is recommended to start with the ones published by RENCI: iCommands and MetaLNX. If they don't meet all of your user's needs, add in Cyberduck. If there are still use cases that aren't supported, branch out to other clients like Baton, GoCommands, etc.
