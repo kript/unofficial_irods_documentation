@@ -1,6 +1,6 @@
 # Initial Deployment
 
-<!-- TODO write an introductory paragraph. -->
+Deploying iRODS has becoming a lot easier over the years. The [documentation](https://docs.irods.org/4.3.2/getting_started/installation/) has greatly improved, and their is now training every year at the [iRODS UGM](https://irods.org/ugm/). However, iRODS has a highly versatile configuration. There are lots of decisions that need to be made before an initial deployment. This document provides advice to help make those decisions.
 
 ## Prerequisites
 
