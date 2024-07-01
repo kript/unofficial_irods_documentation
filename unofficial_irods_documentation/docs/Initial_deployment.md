@@ -1,6 +1,6 @@
 # Initial Deployment
 
-Deploying iRODS has becoming a lot easier over the years. The [documentation](https://docs.irods.org/4.3.2/getting_started/installation/) has greatly improved, and their is now training every year at the [iRODS UGM](https://irods.org/ugm/). However, iRODS has a highly versatile configuration. There are lots of decisions that need to be made before an initial deployment. This document provides advice to help make those decisions.
+Deploying iRODS has becoming a lot easier over the years. The [documentation](https://docs.irods.org/4.3.2/getting_started/installation/) has greatly improved, and there is now training every year at the [iRODS UGM](https://irods.org/ugm/). However, iRODS has a highly versatile configuration. There are lots of decisions that need to be made before an initial deployment. This document provides advice to help make those decisions.
 
 ## Prerequisites
 
@@ -64,7 +64,7 @@ CyVerse's database is approximately 900 GiB in size, but PostgreSQL is using 140
 
 #### Network
 
-Since the iRODS catalog provider will be making lots a requests to the DBMS with nearly all of these requests and their responses only requiring a small amount of data being transferred, the latency of the network connection between the catalog provider and the DBMS should be as small as reasonably possible.
+Since the iRODS catalog provider will be making lots of requests to the DBMS with nearly all of these requests and their responses only requiring a small amount of data being transferred, the latency of the network connection between the catalog provider and the DBMS should be as small as reasonably possible.
 
 Network throughput is not that important. Over a one day period, CyVerse observed their catalog database had an average throughput of 4 MiB/s with a peak of 11 MiB/s.
 
@@ -83,7 +83,8 @@ iRODS support a variety of deployment topologies. When determining which deploym
 In general, it is better to have the catalog provider on a separate server that the DBMS, but there are cases where it makes sense to collocate them as long as the DBMS is on a single host and is dedicated to iRODS.
 
 1. The iRODS zone will be small and lightly used. In other words, the zone won't have a lot of data objects and there won't be more than a few concurrent connections.
-1. The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used -- maybe less than 10 concurrent connections.
+1. The catalog provider will not be storing data object replicas locally, and the system is expected to be moderately used - maybe less than 10 concurrent connections.
+1. The zone will be used for testing.
 
 #### Deciding if catalog provider should be a resource server
 
