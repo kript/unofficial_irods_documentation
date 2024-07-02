@@ -13,11 +13,11 @@ nav:
     - System Administration:
       - "Containerisation": Containerisation.md
       - "General Notes": Sysadmin.md
+      - "Initial deployment": Initial_deployment.md
       - "Setup": Server_setup.md
       - "Usefull Queries": Queries.md
     - User / Client notes:
       - "User Notes": User.md
-    # - "Initial deployment"
     # - "Metrics and monitoring"
     # - "Zone Management"
     # - "Misc best practices"
